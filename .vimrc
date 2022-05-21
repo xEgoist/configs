@@ -18,3 +18,4 @@ set mouse=a
 syntax on
 syntax enable
 colorscheme desert
+:hi Normal guibg=NONE ctermbg=NONE
