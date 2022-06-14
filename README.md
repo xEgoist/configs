@@ -21,6 +21,7 @@ Dotfiles aren't complete. There is so much configs going inside .config that nee
 - Locale warning on non NIXOS systems:
 
 run the following for fish: 
+
 `set -Ux LOCALE_ARCHIVE (nix-build --no-out-link '<nixpkgs>' -A glibcLocales)'/lib/locale/locale-archive'`
 
 or for bash:
