@@ -1,6 +1,6 @@
 # Auth with polkit-gnome:
-exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-
+#exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec --no-startup-id /nix/store/2n0k96njvgmazv8sr96jlzmyidffmdk7-polkit-gnome-0.105/libexec/polkit-gnome-authentication-agent-1
 # Desktop notifications
 exec mako
 
