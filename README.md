@@ -27,3 +27,15 @@ Dotfiles aren't complete. There is so much configs going inside .config that nee
   or for bash:
 
   `export LOCALE_ARCHIVE=/usr/lib/locale/locale-archive`
+
+- Sway and playing steam games on full screen:
+
+  I found that playing steam games on sway is not the best experience compared to gnome, especially because the mouse would have a limited area. To get the correct area, I had to disable the second monitor temporarily.
+
+  
+  Currently, the procedure is:
+    
+    - Edit the sway file to comment out my customization for the second monitor.
+    - temporarily disable the second monitor using ` swaymsg "output DP-2 dpms off" ` Replace DP-2 with your monitor
+    - Play the game.
+

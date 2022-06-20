@@ -24,8 +24,11 @@
         set nojoinspaces
         set shiftround
         set cc=100
-        :hi Normal guibg=NONE ctermbg=NONE
         colorscheme desert
+        hi! Normal ctermbg=NONE guibg=NONE
+        hi! NonText ctermbg=NONE guibg=NONE
+        hi! MatchParen cterm=bold ctermbg=none ctermfg=magenta
+        hi! Search cterm=bold ctermbg=none ctermfg=red
         set nolbr
         set tw=0
         set pastetoggle=<F2>
