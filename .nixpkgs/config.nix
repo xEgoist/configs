@@ -1,12 +1,21 @@
  { pkgs, ... } :
- let 
+ let
+  discordRPC = pkgs.vimUtils.buildVimPlugin {
+    name = "";
+    src = pkgs.fetchFromGitHub {
+      owner = "pucka906";
+      repo = "vdrpc";
+      rev = "master";
+      sha256 = "y4dh9cv68a3YaTAuHDUP01nlKr1cfCzRGqwawLXPFx0=";
+    };
+  };
   unstable = import <unstable> {};
   homeDir = builtins.getEnv "HOME";
  in
  {
   allowUnfree = true;
   packageOverrides = pkgs: with pkgs; rec {
-    my_vim = vim_configurable.customize {
+    my_vim = unstable.vim_configurable.customize {
       name = "vim";
       # add here code from the example section
       vimrcConfig.customRC = ''
@@ -40,6 +49,7 @@
         set nolbr
         set tw=0
         set pastetoggle=<F2>
+        set rtp+=/opt/homebrew/opt/fzf
         " My Mappings
         " Save using doas
         cmap w!! w !doas tee % >/dev/null
@@ -62,7 +72,7 @@
     '';
     #vimrcConfig.plug.plugins = with pkgs.vimPlugins; [zig-vim];
     vimrcConfig.packages.myVimPackage = with pkgs.vimPlugins; {
-      start = [ zig-vim editorconfig-vim ];
+      start = [ zig-vim editorconfig-vim discordRPC ];
     };
     };
     myNeovim = neovim.override {
@@ -88,11 +98,8 @@
         set nojoinspaces
         set shiftround
         set cc=100
-        colorscheme desert
-        hi! Normal ctermbg=NONE guibg=NONE
-        hi! NonText ctermbg=NONE guibg=NONE
-        hi! MatchParen cterm=bold ctermbg=none ctermfg=magenta
-        hi! Search cterm=bold ctermbg=none ctermfg=red
+        colorscheme carbonfox
+        let g:c_syntax_for_h = 1
         set nolbr
         set tw=0
         set pastetoggle=<F2>
@@ -112,23 +119,40 @@
         map <Home> <Nop>
         map <PageUp> <Nop>
         map <PageDown> <Nop>
+        set backupcopy=yes
+        map <ScrollWheelUp> <C-Y>
+        map <ScrollWheelDown> <C-E>
+        set so=999
+        let g:zig_fmt_autosave = 0
+        au VimLeave * set guicursor=a:ver90
+        set mouse=
+        lua require('init')
+        lua require('plugins')
       '';
         packages.myVimPackage = with pkgs.vimPlugins; {
-          # see examples below how to use custom packages
-          start = [ zig-vim editorconfig-vim ];
+          start = [ 
+          zig-vim
+          editorconfig-vim
+          packer-nvim
+          (nvim-treesitter.withPlugins (
+          plugins: with plugins; [
+            tree-sitter-nix
+            tree-sitter-python
+            tree-sitter-c
+            tree-sitter-rust
+          ]))];
           opt = [ ];
         }; 
-      };     
+      };
+      vimAlias = true;
     };
     all = pkgs.buildEnv {
       name = "all";
       paths = [
-        my_vim
-				myNeovim
-        ffmpeg
-        fzf
+        #my_vim
+	unstable.myNeovim
         unstable.fd
-        vscode
+        unstable.helix
       ];
   
     };
