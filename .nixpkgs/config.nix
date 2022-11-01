@@ -123,24 +123,19 @@
         map <ScrollWheelUp> <C-Y>
         map <ScrollWheelDown> <C-E>
         set so=999
-        let g:zig_fmt_autosave = 0
+        "let g:zig_fmt_autosave = 0
         au VimLeave * set guicursor=a:ver90
         set mouse=
         lua require('init')
         lua require('plugins')
       '';
         packages.myVimPackage = with pkgs.vimPlugins; {
-          start = [ 
+          start = [
+          fzf-vim
           zig-vim
           editorconfig-vim
           packer-nvim
-          (nvim-treesitter.withPlugins (
-          plugins: with plugins; [
-            tree-sitter-nix
-            tree-sitter-python
-            tree-sitter-c
-            tree-sitter-rust
-          ]))];
+          ];
           opt = [ ];
         }; 
       };
@@ -153,6 +148,11 @@
 	unstable.myNeovim
         unstable.fd
         unstable.helix
+        fzf
+        unstable.discord
+        tealdeer
+        entr
+        ripgrep
       ];
   
     };
