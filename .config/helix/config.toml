@@ -1,0 +1,8 @@
+theme = "bogster"
+[editor]
+rulers = [100]
+[editor.cursor-shape]
+insert = "bar"
+
+[editor.lsp]
+display-signature-help-docs = false
