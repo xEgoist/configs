@@ -11,31 +11,22 @@ if [[ -n ${ZDOTDIR}/.zcompdump(#qN.mh+24) ]]; then
 else
   compinit -C
 fi
-
-setopt correctall
+setopt histignoredups
+setopt correct              
+setopt no_correctall        
 antidote load
 ZSH_AUTOSUGGEST_STRATEGY=(match_prev_cmd completion history)
-WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
+# WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
 alias ls='ls --color'
 alias ll='ls -l'
-bindkey -e
+alias ..="cd .."
+# bindkey -e
 bindkey "^[b" backward-word
 bindkey "^[f" forward-word
-bindkey "^[[1;5C" forward-word
-bindkey "^[[1;5D" backward-word
+bindkey "^[^[[C" forward-word
+bindkey "^[^[[D" backward-word
 export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
-#. /nix/var/nix/profiles/default/etc/profile.d/nix.sh
-#. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
-export PATH=/home/egoist/.local/bin:$PATH
-export PATH=/opt/wasi-sdk/bin:$PATH
-export HISTFILE=~/.zsh_history
-export HISTSIZE=100000
-export SAVEHIST=$HISTSIZE
-alias open=xdg-open
-if [ -n "${commands[fzf-share]}" ]; then
-  source "$(fzf-share)/key-bindings.zsh"
-  source "$(fzf-share)/completion.zsh"
-fi
-#[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-[ "$(tty)" = "/dev/tty1" ] && exec sway
+. /nix/var/nix/profiles/default/etc/profile.d/nix.sh
+. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+export PATH=/Users/egoist/.local/bin:$PATH
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
