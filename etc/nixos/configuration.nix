@@ -5,10 +5,9 @@
 { config, pkgs, ... }:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
+  imports = [ # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+  ];
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -17,14 +16,14 @@
 
   networking.hostName = "Egoist"; # Define your hostname.
 
-
   networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
   networking.networkmanager.dns = "none";
   networking.dhcpcd.extraConfig = "nohook resolv.conf";
   services.resolved.enable = false;
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+  networking.networkmanager.enable =
+    true; # Easiest to use and most distros use this by default.
   nixpkgs.config.allowUnfree = true;
   boot.initrd.kernelModules = [ "amdgpu" ];
 
@@ -47,9 +46,6 @@
   # Enable the X11 windowing system.
   # services.xserver.enable = true;
 
-
-  
-
   # Configure keymap in X11
   # services.xserver.layout = "us";
   # services.xserver.xkbOptions = {
@@ -63,64 +59,64 @@
   # Enable sound.
   #sound.enable = true;
   # hardware.pulseaudio.enable = true;
-  
+
   security.rtkit.enable = true;
   services.pipewire = {
-  	enable = true;
-  	alsa.enable = true;
-  	alsa.support32Bit = true;
-  	pulse.enable = true;
-  	# If you want to use JACK applications, uncomment this
-  	#jack.enable = true;
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    # If you want to use JACK applications, uncomment this
+    #jack.enable = true;
   };
-  
+
   services.pipewire = {
-  config.pipewire = {
-  	"context.properties" = {
-  		"link.max-buffers" = 16;
-  		"log.level" = 2;
-  		"default.clock.rate" = 48000;
-  		"default.clock.quantum" = 32;
-  		"default.clock.min-quantum" = 32;
-  		"default.clock.max-quantum" = 32;
-  		"core.daemon" = true;
-  		"core.name" = "pipewire-0";
-  	};
-  	"context.modules" = [
-  		{
-  			name = "libpipewire-module-rtkit";
-  			args = {
-  				"nice.level" = -15;
-  				"rt.prio" = 88;
-  				"rt.time.soft" = 200000;
-  				"rt.time.hard" = 200000;
-  			};
-  			flags = [ "ifexists" "nofail" ];
-  		}
-  		{ name = "libpipewire-module-protocol-native"; }
-  		{ name = "libpipewire-module-profiler"; }
-  		{ name = "libpipewire-module-metadata"; }
-  		{ name = "libpipewire-module-spa-device-factory"; }
-  		{ name = "libpipewire-module-spa-node-factory"; }
-  		{ name = "libpipewire-module-client-node"; }
-  		{ name = "libpipewire-module-client-device"; }
-  		{
-  			name = "libpipewire-module-portal";
-  			flags = [ "ifexists" "nofail" ];
-  		}
-  		{
-  			name = "libpipewire-module-access";
-  			args = {};
-  		}
-  		{ name = "libpipewire-module-adapter"; }
-  		{ name = "libpipewire-module-link-factory"; }
-  		{ name = "libpipewire-module-session-manager"; }
-  		];
-  	};
+    config.pipewire = {
+      "context.properties" = {
+        "link.max-buffers" = 16;
+        "log.level" = 2;
+        "default.clock.rate" = 48000;
+        "default.clock.quantum" = 32;
+        "default.clock.min-quantum" = 32;
+        "default.clock.max-quantum" = 32;
+        "core.daemon" = true;
+        "core.name" = "pipewire-0";
+      };
+      "context.modules" = [
+        {
+          name = "libpipewire-module-rtkit";
+          args = {
+            "nice.level" = -15;
+            "rt.prio" = 88;
+            "rt.time.soft" = 200000;
+            "rt.time.hard" = 200000;
+          };
+          flags = [ "ifexists" "nofail" ];
+        }
+        { name = "libpipewire-module-protocol-native"; }
+        { name = "libpipewire-module-profiler"; }
+        { name = "libpipewire-module-metadata"; }
+        { name = "libpipewire-module-spa-device-factory"; }
+        { name = "libpipewire-module-spa-node-factory"; }
+        { name = "libpipewire-module-client-node"; }
+        { name = "libpipewire-module-client-device"; }
+        {
+          name = "libpipewire-module-portal";
+          flags = [ "ifexists" "nofail" ];
+        }
+        {
+          name = "libpipewire-module-access";
+          args = { };
+        }
+        { name = "libpipewire-module-adapter"; }
+        { name = "libpipewire-module-link-factory"; }
+        { name = "libpipewire-module-session-manager"; }
+      ];
+    };
   };
   hardware.opengl.extraPackages = with pkgs; [
-  	 rocm-opencl-icd
-  	 rocm-opencl-runtime
+    rocm-opencl-icd
+    rocm-opencl-runtime
   ];
   # Vulkan
   hardware.opengl.driSupport = true;
@@ -128,138 +124,144 @@
   hardware.opengl.driSupport32Bit = true;
 
   # Turn on nix flakes (TODO: Remove once it's no longer experimental)
-  nix.settings.experimental-features = ["nix-command" "flakes"];
- 
-  environment.variables.EDITOR = "vim";  
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
+  environment.variables.EDITOR = "vim";
   nix.settings.auto-optimise-store = true;
   nix = {
-  	gc = {
-  		automatic = true;
-  		dates = "weekly";
-  		options = "--delete-older-than 7d";
-  	 };
-   };
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 7d";
+    };
+  };
   # Fucking sudo man
   security.doas.enable = true;
   security.sudo.enable = false;
   security.doas.extraRules = [{
-  	users = [ "egoist" ];
-  	keepEnv = true;
-  persist = true;
+    users = [ "egoist" ];
+    keepEnv = true;
+    persist = true;
   }];
-   users.users.egoist = {
-  	 shell = pkgs.fish;
-  	 isNormalUser = true;
-  	 extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
-  	 packages = with pkgs; [
-  			nomacs
-  			qbittorrent
-  			thunderbird
-  			vim
-  			irssi
-  			vlc
-  			unzip
-  			git
-  			wireguard-tools
-  			xdg-utils
-        udisks2
-  	 ];
-   };
+  users.users.egoist = {
+    shell = pkgs.fish;
+    isNormalUser = true;
+    extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+    packages = with pkgs; [
+      nomacs
+      qbittorrent
+      thunderbird
+      vim
+      irssi
+      vlc
+      unzip
+      git
+      firefox
+      wireguard-tools
+      xdg-utils
+      udisks2
+    ];
+  };
   # Enable Fish
   programs.fish.enable = true;
-  
-  
+
   programs.sway = {
-  enable = true;
-  wrapperFeatures.gtk = true;
-  extraPackages = with pkgs; [
-  swaylock
-  swayidle
-  wl-clipboard
-  wf-recorder
-  mako
-  oksh
-  grim
-  sway-contrib.grimshot
-  slurp
-  alacritty
-  wofi
-  zafiro-icons
-  pavucontrol
-  waybar
-  swaybg
-  lxappearance
-  gtk-engine-murrine
-  acpi
-  bluez
-  networkmanagerapplet
-  sysstat
-  htop
-  wayland-protocols
-  egl-wayland
-  polkit_gnome
-  gtk-layer-shell
-  xdg-desktop-portal-wlr
-  brightnessctl
-  pamixer
-  dex
-  jq
-  xed
-  arc-theme
-  wget
-  zafiro-icons
-  solarc-gtk-theme
-  foot
-  ];
-  extraSessionCommands = ''
-  '';
+    enable = true;
+    wrapperFeatures.gtk = true;
+    extraPackages = with pkgs; [
+      swaylock
+      swayidle
+      wl-clipboard
+      wf-recorder
+      mako
+      oksh
+      grim
+      sway-contrib.grimshot
+      slurp
+      alacritty
+      wofi
+      zafiro-icons
+      pavucontrol
+      waybar
+      swaybg
+      lxappearance
+      gtk-engine-murrine
+      acpi
+      bluez
+      networkmanagerapplet
+      sysstat
+      htop
+      wayland-protocols
+      egl-wayland
+      polkit_gnome
+      gtk-layer-shell
+      xdg-desktop-portal-wlr
+      brightnessctl
+      pamixer
+      dex
+      jq
+      xed
+      arc-theme
+      wget
+      zafiro-icons
+      solarc-gtk-theme
+      foot
+    ];
+    extraSessionCommands = "";
   };
-  
+
   services.dbus.enable = true;
   xdg = {
-  portal = {
-  	enable = true;
-	wlr.enable = true;
-  	extraPortals = with pkgs; [
-  		xdg-desktop-portal-gtk
-  	];
+    portal = {
+      enable = true;
+      wlr.enable = true;
+      extraPortals = with pkgs; [ xdg-desktop-portal-gtk ];
     };
   };
 
-
   environment.sessionVariables = rec {
-  
-  	## mozilla
-  	MOZ_ENABLE_WAYLAND = "1";
-  	## libreoffice
-  	SAL_USE_VCLPLUGIN = "gtk3";
-  	## qt
-  	QT_QPA_PLATFORM = "wayland-egl";
-  	QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
-  	## efl
-  	ECORE_EVAS_ENGINE = "wayland_egl";
-  	ELM_ENGINE = "wayland_egl";
-  	## sdl
-  	SDL_VIDEODRIVER = "wayland";
-  	## java is bad
-  	_JAVA_AWT_WM_NONREPARENTING = "1";
-  	## xdg session
-  	XDG_SESSION_TYPE = "wayland";
-  	XDG_CURRENT_DESKTOP = "sway";
+
+    ## mozilla
+    MOZ_ENABLE_WAYLAND = "1";
+    ## libreoffice
+    SAL_USE_VCLPLUGIN = "gtk3";
+    ## qt
+    QT_QPA_PLATFORM = "wayland-egl";
+    QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
+    ## efl
+    ECORE_EVAS_ENGINE = "wayland_egl";
+    ELM_ENGINE = "wayland_egl";
+    ## sdl
+    SDL_VIDEODRIVER = "wayland";
+    ## java is bad
+    _JAVA_AWT_WM_NONREPARENTING = "1";
+    ## xdg session
+    XDG_SESSION_TYPE = "wayland";
+    XDG_CURRENT_DESKTOP = "sway";
   };
-  
-  
-  fonts.fonts = with pkgs; [
-  (nerdfonts.override { fonts = [ "FiraCode" "DroidSansMono" "IBMPlexMono" "UbuntuMono" "VictorMono"]; })
-  ];
-  
+
+  fonts.fonts = with pkgs;
+    [
+      (nerdfonts.override {
+        fonts = [
+          "FiraCode"
+          "DroidSansMono"
+          "IBMPlexMono"
+          "UbuntuMono"
+          "VictorMono"
+        ];
+      })
+    ];
+
   programs.waybar.enable = true;
-  
+
   qt5.platformTheme = "qt5ct";
   programs.steam = {
-  	enable = true;
-  	remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
-  	dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+    enable = true;
+    remotePlay.openFirewall =
+      true; # Open ports in the firewall for Steam Remote Play
+    dedicatedServer.openFirewall =
+      true; # Open ports in the firewall for Source Dedicated Server
   };
 
   # Enable touchpad support (enabled default in most desktopManager).
