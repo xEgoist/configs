@@ -16,14 +16,13 @@
 
   networking.hostName = "Egoist"; # Define your hostname.
 
-  networking.nameservers = [ "1.1.1.1" "8.8.8.8" ];
+  networking.nameservers = [ "1.1.1.1" ];
   networking.networkmanager.dns = "none";
   networking.dhcpcd.extraConfig = "nohook resolv.conf";
   services.resolved.enable = false;
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  networking.networkmanager.enable =
-    true; # Easiest to use and most distros use this by default.
+  networking.networkmanager.enable = true; 
   nixpkgs.config.allowUnfree = true;
   boot.initrd.kernelModules = [ "amdgpu" ];
 
@@ -75,43 +74,43 @@
       "context.properties" = {
         "link.max-buffers" = 16;
         "log.level" = 2;
-        "default.clock.rate" = 48000;
-        "default.clock.quantum" = 32;
-        "default.clock.min-quantum" = 32;
-        "default.clock.max-quantum" = 32;
+        "default.clock.allowed-rates" = [ 44100 48000 88200 96000 ];
+       # "default.clock.quantum" = 50000;
+       # "default.clock.min-quantum" = 50000;
+       # "default.clock.max-quantum" = 50000;
         "core.daemon" = true;
         "core.name" = "pipewire-0";
       };
-      "context.modules" = [
-        {
-          name = "libpipewire-module-rtkit";
-          args = {
-            "nice.level" = -15;
-            "rt.prio" = 88;
-            "rt.time.soft" = 200000;
-            "rt.time.hard" = 200000;
-          };
-          flags = [ "ifexists" "nofail" ];
-        }
-        { name = "libpipewire-module-protocol-native"; }
-        { name = "libpipewire-module-profiler"; }
-        { name = "libpipewire-module-metadata"; }
-        { name = "libpipewire-module-spa-device-factory"; }
-        { name = "libpipewire-module-spa-node-factory"; }
-        { name = "libpipewire-module-client-node"; }
-        { name = "libpipewire-module-client-device"; }
-        {
-          name = "libpipewire-module-portal";
-          flags = [ "ifexists" "nofail" ];
-        }
-        {
-          name = "libpipewire-module-access";
-          args = { };
-        }
-        { name = "libpipewire-module-adapter"; }
-        { name = "libpipewire-module-link-factory"; }
-        { name = "libpipewire-module-session-manager"; }
-      ];
+#      "context.modules" = [
+#        {
+#          name = "libpipewire-module-rtkit";
+#          args = {
+#            "nice.level" = -15;
+#            "rt.prio" = 88;
+#            "rt.time.soft" = 200000;
+#            "rt.time.hard" = 200000;
+#          };
+#          flags = [ "ifexists" "nofail" ];
+#        }
+#        { name = "libpipewire-module-protocol-native"; }
+#        { name = "libpipewire-module-profiler"; }
+#        { name = "libpipewire-module-metadata"; }
+#        { name = "libpipewire-module-spa-device-factory"; }
+#        { name = "libpipewire-module-spa-node-factory"; }
+#        { name = "libpipewire-module-client-node"; }
+#        { name = "libpipewire-module-client-device"; }
+#        {
+#          name = "libpipewire-module-portal";
+#          flags = [ "ifexists" "nofail" ];
+#        }
+#        {
+#          name = "libpipewire-module-access";
+#          args = { };
+#        }
+#        { name = "libpipewire-module-adapter"; }
+#        { name = "libpipewire-module-link-factory"; }
+#        { name = "libpipewire-module-session-manager"; }
+#      ];
     };
   };
   hardware.opengl.extraPackages = with pkgs; [
@@ -146,7 +145,7 @@
   users.users.egoist = {
     shell = pkgs.fish;
     isNormalUser = true;
-    extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+    extraGroups = [ "wheel" "libvirtd" ]; # Enable ‘sudo’ for the user.
     packages = with pkgs; [
       nomacs
       qbittorrent
@@ -157,6 +156,7 @@
       unzip
       git
       firefox
+      librewolf
       wireguard-tools
       xdg-utils
       udisks2
@@ -276,6 +276,14 @@
   #     thunderbird
   #   ];
   # };
+  # system wide installed packages:
+  environment.systemPackages = with pkgs; [ virt-manager ];
+
+
+
+  # enable libvirtd
+  virtualisation.libvirtd.enable = true;
+  programs.dconf.enable = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -301,7 +309,44 @@
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
+  #networking.firewall.enable = false;
+
+  # VPN Config
+
+#  networking.firewall = {
+#    allowedUDPPorts = [ 2049 ]; # Clients and peers can use the same port, see listenport
+#  };
+#  # Enable WireGuard
+#  networking.wireguard.interfaces = {
+#    # "wg0" is the network interface name. You can name the interface arbitrarily.
+#    wg0 = {
+#      # Determines the IP address and subnet of the client's end of the tunnel interface.
+#      ips = [ "172.25.12.7/32" ];
+#      listenPort = 2049; # to match firewall allowedUDPPorts (without this wg uses random port numbers)
+#
+#      privateKeyFile = "/home/egoist/wireguard-keys/private";
+#      peers = [
+#        # For a client configuration, one peer entry for the server will suffice.
+#
+#        {
+#          # Public key of the server (not a file path).
+#          publicKey = "LvWf548mFddi8PTrIGL6uD1/l85LU8z0Rc8tpvw2Vls=";
+#
+#          # Forward all the traffic via VPN.
+#          allowedIPs = [ "0.0.0.0/0" ];
+#          # Or forward only particular subnets
+#          #allowedIPs = [ "10.100.0.1" "91.108.12.0/22" ];
+#
+#          # Set this to the server IP and port.
+#          endpoint = "96.44.189.197:2049"; # ToDo: route to endpoint not automatically configured https://wiki.archlinux.org/index.php/WireGuard#Loop_routing https://discourse.nixos.org/t/solved-minimal-firewall-setup-for-wireguard-client/7577
+#
+#          # Send keepalives every 25 seconds. Important to keep NAT tables alive.
+#          persistentKeepalive = 25;
+#        }
+#      ];
+#    };
+#  };
+
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
