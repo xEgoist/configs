@@ -70,7 +70,7 @@ Arc-Dark Color Scheme
 #mode,
 #custom-weather,
 #network,
-#pulseaudio,
+#wireplumber,
 #temperature,
 #tray,
 #idle_inhibitor,
@@ -145,11 +145,11 @@ Arc-Dark Color Scheme
     color: orange;
 }
 
-#pulseaudio {
+#wireplumber {
     padding-top:6px;
 }
 
-#pulseaudio.muted {
+#wireplumber.muted {
     color: @highlight;
 }
 
