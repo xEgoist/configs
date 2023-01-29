@@ -15,7 +15,7 @@ in {
   allowUnfree = true;
   packageOverrides = pkgs:
     with pkgs; rec {
-      my_vim = unstable.vim_configurable.customize {
+      my_vim = vim_configurable.customize {
         name = "vim";
         # add here code from the example section
         vimrcConfig.customRC = ''
@@ -88,7 +88,12 @@ in {
           " http://vim.wikia.com/wiki/Highlight_unwanted_spaces
           highlight ExtraWhitespace ctermbg=lightred guibg=lightred
           " Show trailing whitespace and spaces before a tab:
-          match ExtraWhitespace /\s\+$\| \+\ze\t/          
+          match ExtraWhitespace /\s\+$\| \+\ze\t/
+          nnoremap <F5> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar><CR>
+          let &t_SI = "\e[6 q"
+          let &t_EI = "\e[2 q"
+          autocmd VimLeave * silent !echo -ne "\e[6 q"
+          cnoremap w!! execute 'silent! write !sudo tee % >/dev/null' <bar> edit!
         '';
         #vimrcConfig.plug.plugins = with pkgs.vimPlugins; [zig-vim];
         vimrcConfig.packages.myVimPackage = with pkgs.vimPlugins; {
@@ -157,7 +162,14 @@ in {
       };
       all = pkgs.buildEnv {
         name = "all";
-        paths = [ my_vim unstable.myNeovim unstable.fd unstable.helix ];
+        paths = [
+          my_vim
+          #unstable.myNeovim
+          fd
+          unstable.helix
+          entr
+          ripgrep
+        ];
 
       };
     };

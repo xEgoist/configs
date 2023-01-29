@@ -4,3 +4,4 @@ zdharma/fast-syntax-highlighting
 mafredri/zsh-async
 sindresorhus/pure
 Aloxaf/fzf-tab
+

@@ -14,7 +14,8 @@
 Arc-Dark Color Scheme
 */
 @define-color highlight #5294e2 ;
-@define-color base1  #404552 ;
+@define-color base1  #950350 ;
+@define-color base2 #C8046A;
 
 @keyframes blink-warning {
     70% {
@@ -60,51 +61,16 @@ Arc-Dark Color Scheme
     font-size: 14px;
 }
 
-/* Every modules */
-#battery,
-#clock,
-#backlight,
-#cpu,
-#custom-keyboard-layout,
-#memory,
-#mode,
-#custom-weather,
-#network,
-#wireplumber,
-#temperature,
-#tray,
-#idle_inhibitor,
-#custom-PBPbattery {
-    padding:0.5rem 0.6rem;
-    margin: 1px 0px;
-}
 
 /* -----------------------------------------------------------------------------
  * Modules styles
  * -------------------------------------------------------------------------- */
-
-#battery {
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
+#clock {
+    padding-left: 10px;
 }
 
-#battery.warning {
-    color: orange;
-}
-
-#battery.critical {
-    color: red;
-}
-
-#battery.warning.discharging {
-    animation-name: blink-warning;
-    animation-duration: 3s;
-}
-
-#battery.critical.discharging {
-    animation-name: blink-critical;
-    animation-duration: 2s;
+#cpu {
+    padding-left: 10px;
 }
 
 #cpu.warning {
@@ -115,10 +81,15 @@ Arc-Dark Color Scheme
     color: red;
 }
 
+
+#idle_inhibitor {
+    padding-left: 10px;
+}
 #memory {
     animation-timing-function: linear;
     animation-iteration-count: infinite;
     animation-direction: alternate;
+    padding-left: 10px;
 }
 
 #memory.warning {
@@ -129,8 +100,6 @@ Arc-Dark Color Scheme
     color: red;
     animation-name: blink-critical;
     animation-duration: 2s;
-    padding-left:5px;
-    padding-right:5px;
 }
 
 #mode {
@@ -138,7 +107,11 @@ Arc-Dark Color Scheme
     border-bottom: 3px transparent;
     color:white;
     margin-left: 5px;
-    padding:7;
+    padding:7px;
+}
+
+#network {
+    padding-left: 10px;
 }
 
 #network.disconnected {
@@ -146,7 +119,8 @@ Arc-Dark Color Scheme
 }
 
 #wireplumber {
-    padding-top:6px;
+    padding-left:6px;
+    padding-right:6px;
 }
 
 #wireplumber.muted {
@@ -174,7 +148,7 @@ Arc-Dark Color Scheme
 #workspaces button.focused {
     border-bottom: 3px solid  @highlight;
     margin-bottom: 1px;
-    padding-left: 3;
+    padding-left: 3px;
 }
 
 #workspaces button.urgent {
@@ -194,7 +168,22 @@ Arc-Dark Color Scheme
     margin-right:10px;
 }
 
-#backlight.icon {
-    padding-right:1px;
-    font-size: 13px;
+
+
+#mpd {
+   background-image: linear-gradient(to right, @base1,@base2, @base1);
+    font-size: 12px;
+   color: #FFFFFF;
+}
+     
+#mpd.disconnected {
+   background-color: #2d5986;
+}
+
+#mpd.stopped {
+   background-color: #2d5986;
+}
+
+#mpd.paused {
+   background-color: #2d5986;
 }

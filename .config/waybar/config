@@ -4,7 +4,7 @@
     "position": "top",
 
     // If height property would be not present, it'd be calculated dynamically
-    "height": 30,
+    "height": 38,
 
     "modules-left": [
         "custom/launcher",
@@ -16,13 +16,14 @@
     ],
 
     "modules-right": [
+        "mpd",
         "network",
         "idle_inhibitor",
         "memory",
         "cpu",
-        "wireplumber",
+       "wireplumber",
         "clock",
-        "tray",
+        // "tray",
         "custom/power",
     ],
 
@@ -37,7 +38,6 @@
     },
 
     "clock": {
-        "interval": 10,
         "format-alt": " {:%e %b %Y}", // Icon: calendar-alt
         "format": "{:%H:%M}",
         "tooltip-format": "{:%e %B %Y}"
@@ -67,7 +67,7 @@
     "network": {
         "interval": 5,
         "format-wifi": "  {essid} ({signalStrength}%)", // Icon: wifi
-        "format-ethernet": "  {ifname}: {ipaddr}/{cidr}", // Icon: ethernet
+        "format-ethernet": "|   {ifname}: {ipaddr}/{cidr}", // Icon: ethernet
         "format-disconnected": "⚠  Disconnected",
         "tooltip-format": "{ifname}: {ipaddr}",
         "on-click": "xfce4-terminal -e 'nmtui'",
@@ -111,6 +111,33 @@
         "on-scroll-down": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%-",
     },
 
+    "mpd": {
+        "format": "| {stateIcon} {consumeIcon}{randomIcon}{repeatIcon}{singleIcon}{artist} - {album} - {title} ({elapsedTime:%M:%S}/{totalTime:%M:%S}) ⸨{songPosition}|{queueLength}⸩ {volume}%  ",
+        "format-disconnected": "Disconnected ",
+        "format-stopped": "{consumeIcon}{randomIcon}{repeatIcon}{singleIcon}Stopped ",
+        "unknown-tag": "N/A",
+        "interval": 2,
+        "consume-icons": {
+            "on": " "
+        },
+        "random-icons": {
+            "off": "<span color=\"#f53c3c\"></span> ",
+            "on": " "
+        },
+        "repeat-icons": {
+            "on": " "
+        },
+        "single-icons": {
+            "on": "1 "
+        },
+        "state-icons": {
+            "paused": "",
+            "playing": ""
+        },
+        "tooltip-format": "MPD (connected)",
+        "tooltip-format-disconnected": "MPD (disconnected)",
+        "on-click": "mpc toggle",
+    },
 
     "tray": {
         "icon-size": 14,

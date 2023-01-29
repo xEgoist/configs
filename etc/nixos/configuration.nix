@@ -3,7 +3,9 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 { config, pkgs, ... }:
-
+let
+  unstable = import <unstable> {};
+in
 {
   imports = [ # Include the results of the hardware scan.
     ./hardware-configuration.nix
@@ -16,13 +18,13 @@
 
   networking.hostName = "Egoist"; # Define your hostname.
 
-  networking.nameservers = [ "1.1.1.1" ];
+  networking.nameservers = [ "45.90.28.69" "45.90.30.69" ];
   networking.networkmanager.dns = "none";
   networking.dhcpcd.extraConfig = "nohook resolv.conf";
   services.resolved.enable = false;
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  networking.networkmanager.enable = true; 
+  networking.networkmanager.enable = true;
   nixpkgs.config.allowUnfree = true;
   boot.initrd.kernelModules = [ "amdgpu" ];
 
@@ -64,7 +66,7 @@
     enable = true;
     alsa.enable = true;
     alsa.support32Bit = true;
-    pulse.enable = true;
+    #pulse.enable = true;
     # If you want to use JACK applications, uncomment this
     #jack.enable = true;
   };
@@ -143,73 +145,76 @@
     persist = true;
   }];
   users.users.egoist = {
-    shell = pkgs.fish;
+    shell = pkgs.zsh;
     isNormalUser = true;
     extraGroups = [ "wheel" "libvirtd" ]; # Enable ‘sudo’ for the user.
     packages = with pkgs; [
+      firefox
+      fzf
+      git
+      irssi
+      librewolf
+      mpc_cli
       nomacs
+      obs-studio
       qbittorrent
       thunderbird
-      vim
-      irssi
-      vlc
+      udisks2
       unzip
-      git
-      firefox
-      librewolf
+      vim
+      vimpc
+      vlc
       wireguard-tools
       xdg-utils
-      udisks2
+      unstable.brave
     ];
   };
   # Enable Fish
-  programs.fish.enable = true;
+  #programs.fish.enable = true;
 
   programs.sway = {
     enable = true;
     wrapperFeatures.gtk = true;
     extraPackages = with pkgs; [
-      swaylock
-      swayidle
-      wl-clipboard
-      wf-recorder
-      mako
-      oksh
-      grim
-      sway-contrib.grimshot
-      slurp
-      alacritty
-      wofi
-      zafiro-icons
-      pavucontrol
-      waybar
-      swaybg
-      lxappearance
-      gtk-engine-murrine
+      #arc-theme
+      #brightnessctl
+      #solarc-gtk-theme
+      #zafiro-icons
       acpi
-      bluez
-      networkmanagerapplet
-      sysstat
-      htop
-      wayland-protocols
-      egl-wayland
-      polkit_gnome
-      gtk-layer-shell
-      xdg-desktop-portal-wlr
-      brightnessctl
-      pamixer
+      alacritty
       dex
-      jq
-      xed
-      arc-theme
-      wget
-      zafiro-icons
-      solarc-gtk-theme
+      egl-wayland
       foot
+      grim
+      gtk-engine-murrine
+      gtk-layer-shell
+      htop
+      jq
+      mako
+      networkmanagerapplet
+      oksh
+      phinger-cursors
+      polkit_gnome
+      slurp
+      sway-contrib.grimshot
+      swaybg
+      swayidle
+      swayimg
+      swaylock
+      sysstat
+      unstable.waybar
+      wayland-protocols
+      wf-recorder
+      wget
+      wl-clipboard
+      wofi
+      xdg-desktop-portal-wlr
+      xed
     ];
     extraSessionCommands = "";
   };
-
+  services.blueman.enable = true;
+  hardware.bluetooth.enable = true;
   services.dbus.enable = true;
   xdg = {
     portal = {
@@ -231,8 +236,8 @@
     ## efl
     ECORE_EVAS_ENGINE = "wayland_egl";
     ELM_ENGINE = "wayland_egl";
-    ## sdl
-    SDL_VIDEODRIVER = "wayland";
+    ## sdl No longer needed (Will cause steam to fail)
+    #SDL_VIDEODRIVER = "wayland";
     ## java is bad
     _JAVA_AWT_WM_NONREPARENTING = "1";
     ## xdg session
@@ -251,6 +256,9 @@
           "VictorMono"
         ];
       })
+	  noto-fonts
+	  noto-fonts-cjk
+	  noto-fonts-emoji
     ];
 
   programs.waybar.enable = true;
@@ -285,6 +293,25 @@
   virtualisation.libvirtd.enable = true;
   programs.dconf.enable = true;
 
+
+  #MPD
+  services.mpd.user = "egoist";
+  systemd.services.mpd.environment = {
+    # https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/609
+    XDG_RUNTIME_DIR = "/run/user/1000"; 
+  };
+  services.mpd = {
+  enable = true;
+  musicDirectory = "/home/egoist/Music";
+  extraConfig = ''
+    auto_update "yes"
+	audio_output {
+	  type "pipewire"
+	  name "My PipeWire Output"
+	}
+  '';
+  };
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   # environment.systemPackages = with pkgs; [
@@ -313,34 +340,17 @@
 
   # VPN Config
 
-#  networking.firewall = {
-#    allowedUDPPorts = [ 2049 ]; # Clients and peers can use the same port, see listenport
-#  };
-#  # Enable WireGuard
-#  networking.wireguard.interfaces = {
-#    # "wg0" is the network interface name. You can name the interface arbitrarily.
+#  networking.wg-quick.interfaces = {
 #    wg0 = {
-#      # Determines the IP address and subnet of the client's end of the tunnel interface.
-#      ips = [ "172.25.12.7/32" ];
-#      listenPort = 2049; # to match firewall allowedUDPPorts (without this wg uses random port numbers)
-#
+#      address = [ "172.25.12.7/32" ];
+#      dns = [ "172.16.0.1" ];
 #      privateKeyFile = "/home/egoist/wireguard-keys/private";
+#
 #      peers = [
-#        # For a client configuration, one peer entry for the server will suffice.
-#
 #        {
-#          # Public key of the server (not a file path).
 #          publicKey = "LvWf548mFddi8PTrIGL6uD1/l85LU8z0Rc8tpvw2Vls=";
-#
-#          # Forward all the traffic via VPN.
 #          allowedIPs = [ "0.0.0.0/0" ];
-#          # Or forward only particular subnets
-#          #allowedIPs = [ "10.100.0.1" "91.108.12.0/22" ];
-#
-#          # Set this to the server IP and port.
-#          endpoint = "96.44.189.197:2049"; # ToDo: route to endpoint not automatically configured https://wiki.archlinux.org/index.php/WireGuard#Loop_routing https://discourse.nixos.org/t/solved-minimal-firewall-setup-for-wireguard-client/7577
-#
-#          # Send keepalives every 25 seconds. Important to keep NAT tables alive.
+#          endpoint = "96.44.189.197:2049";
 #          persistentKeepalive = 25;
 #        }
 #      ];

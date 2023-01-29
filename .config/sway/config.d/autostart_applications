@@ -1,11 +1,8 @@
 # Auth with polkit-gnome:
 #exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-exec --no-startup-id /nix/store/2n0k96njvgmazv8sr96jlzmyidffmdk7-polkit-gnome-0.105/libexec/polkit-gnome-authentication-agent-1
+#exec --no-startup-id /nix/store/2n0k96njvgmazv8sr96jlzmyidffmdk7-polkit-gnome-0.105/libexec/polkit-gnome-authentication-agent-1
 # Desktop notifications
 exec mako
-
-# Network Applet
-exec nm-applet --indicator
 
 # GTK3 applications take a long time to start
 exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
