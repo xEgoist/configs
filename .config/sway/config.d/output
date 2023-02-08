@@ -16,5 +16,5 @@
 #output DP-1 bg ~/Downloads/__ganyu_genshin_impact_drawn_by_user_anhk8542__e5d7edc9ae11c8b6f5725d01af3bb2d5.png tile
 
 #output DP-2 bg ~/Downloads/7dfed0866a075dd7097aa9d603fc5633.jpg fill
-output DP-1 resolution 2560x2880@59.982Hz bg ~/.config/sway/97765248_p0_cropped.png fill
+output DP-1 resolution 2560x2880@59.982Hz bg ~/Downloads/104790993_p0.png fill
 

@@ -1,0 +1,5 @@
+media-video/pipewire dbus doc extra ffmpeg pipewire-alsa sound-server gstreamer
+# required by media-gfx/graphviz-5.0.1-r2::gentoo
+# required by media-video/pipewire-0.3.63-r3::gentoo[doc]
+# required by media-video/wireplumber-0.4.13::gentoo
+>=media-libs/gd-2.3.3-r3 truetype fontconfig
