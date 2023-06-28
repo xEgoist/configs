@@ -61,16 +61,17 @@ Arc-Dark Color Scheme
     font-size: 14px;
 }
 
+#clock, #cpu, #memory, #mode, #network, #custom-wpctl, #mpd, #idle_inhibitor {
+    padding-right: 8px;
+    padding-left: 8px;
+    border-right: 3px solid #523e67;
+}
 
 /* -----------------------------------------------------------------------------
  * Modules styles
  * -------------------------------------------------------------------------- */
-#clock {
-    padding-left: 10px;
-}
 
 #cpu {
-    padding: 5px;
 }
 
 #cpu.warning {
@@ -84,7 +85,6 @@ Arc-Dark Color Scheme
 
 #idle_inhibitor {
     font-size: 20px; 
-    padding: 2px;
 }
 #memory {
     animation-timing-function: linear;
@@ -111,7 +111,6 @@ Arc-Dark Color Scheme
 }
 
 #network {
-    padding: 10px;
 }
 
 #network.disconnected {
@@ -119,8 +118,6 @@ Arc-Dark Color Scheme
 }
 
 #wireplumber {
-    padding-left:6px;
-    padding-right:6px;
 }
 
 #custom-wpctl {

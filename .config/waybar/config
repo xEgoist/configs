@@ -30,7 +30,7 @@
     // Modules
 
     "idle_inhibitor": {
-        "format": "{icon} ",
+        "format": "{icon}",
         "format-icons":{
             "activated": "🍵",
             "deactivated": "💤"
@@ -45,7 +45,7 @@
 
     "cpu": {
         "interval": 5,
-        "format": "| ⚙️  {usage}% ({load}) |", // Icon: microchip
+        "format": "⚙️  {usage}% ({load})", // Icon: microchip
         "states": {
             "warning": 70,
             "critical": 90,
@@ -56,7 +56,7 @@
 
     "memory": {
         "interval": 5,
-        "format": "| 💾 {}%", // Icon: memory
+        "format": "💾 {}%", // Icon: memory
         "on-click": "foot 'htop'",
         "states": {
             "warning": 70,
@@ -67,7 +67,7 @@
     "network": {
         "interval": 5,
         "format-wifi": "  {essid} ({signalStrength}%)", // Icon: wifi
-        "format-ethernet": "| 🌐 {ifname}: {ipaddr}/{cidr} |", // Icon: ethernet
+        "format-ethernet": "🌐 {ifname}: {ipaddr}/{cidr}", // Icon: ethernet
         "format-disconnected": "⚠  Disconnected",
         "tooltip-format": "{ifname}: {ipaddr}",
         "on-click": "xfce4-terminal -e 'nmtui'",
@@ -104,8 +104,8 @@
     },
 
    // "wireplumber": {
-   //     "format": "{volume}% 🔊 |",
-   //     "format-muted": "🔇 |",
+   //     "format": "{volume}% 🔊 ",
+   //     "format-muted": "🔇 ",
    //     "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
    //     "on-scroll-up": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+",
    //     "on-scroll-down": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%-",
@@ -113,7 +113,7 @@
     "custom/wpctl": {
         "exec": "~/.config/waybar/scripts/wpctl.sh",
         "interval": "once",
-        "format": "{} |",
+        "format": "{}",
         "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
         "on-scroll-up": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+",
         "on-scroll-down": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%-",
@@ -121,7 +121,7 @@
 
     "mpd": {
         "server": "/home/egoist/.config/mpd/socket",
-        "format": "| {stateIcon} {consumeIcon}{randomIcon}{repeatIcon}{singleIcon}{artist} - {album} - {title} ({elapsedTime:%M:%S}/{totalTime:%M:%S}) ⸨{songPosition}|{queueLength}⸩ {volume}% 🎵 ",
+        "format": " {stateIcon} {consumeIcon}{randomIcon}{repeatIcon}{singleIcon}{artist} - {album} - {title} ({elapsedTime:%M:%S}/{totalTime:%M:%S}) ⸨{songPosition}|{queueLength}⸩ {volume}% 🎵 ",
         "format-disconnected": "Disconnected 🎵",
         "format-stopped": "{consumeIcon}{randomIcon}{repeatIcon}{singleIcon}Stopped 🎵",
         "unknown-tag": "N/A",
