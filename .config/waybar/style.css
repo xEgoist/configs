@@ -13,8 +13,8 @@
 /*
 Arc-Dark Color Scheme
 */
-@define-color highlight #5294e2 ;
-@define-color base1  #950350 ;
+@define-color highlight #5294e2;
+@define-color base1  #3E3F67;
 @define-color base2 #C8046A;
 
 @keyframes blink-warning {
@@ -57,7 +57,7 @@ Arc-Dark Color Scheme
     background: transparent;
     color: #bebebe;
     background-color: @base1;
-    font-family: VictorMono Nerd Font;
+    font-family: "PragmataPro";
     font-size: 14px;
 }
 
@@ -70,7 +70,7 @@ Arc-Dark Color Scheme
 }
 
 #cpu {
-    padding-left: 10px;
+    padding: 5px;
 }
 
 #cpu.warning {
@@ -83,13 +83,13 @@ Arc-Dark Color Scheme
 
 
 #idle_inhibitor {
-    padding-left: 10px;
+    font-size: 20px; 
+    padding: 2px;
 }
 #memory {
     animation-timing-function: linear;
     animation-iteration-count: infinite;
     animation-direction: alternate;
-    padding-left: 10px;
 }
 
 #memory.warning {
@@ -111,7 +111,7 @@ Arc-Dark Color Scheme
 }
 
 #network {
-    padding-left: 10px;
+    padding: 10px;
 }
 
 #network.disconnected {
@@ -121,6 +121,13 @@ Arc-Dark Color Scheme
 #wireplumber {
     padding-left:6px;
     padding-right:6px;
+}
+
+#custom-wpctl {
+}
+
+#custom-wpctl.muted {
+    color: @highlight;
 }
 
 #wireplumber.muted {
@@ -135,9 +142,6 @@ Arc-Dark Color Scheme
     font-weight: bold;
 }
 
-#workspaces {
-    font-size:16px;
-}
 
 #workspaces button {
     border-bottom: 3px solid transparent;
@@ -159,11 +163,9 @@ Arc-Dark Color Scheme
 #custom-power {
     margin-left:15px;
     margin-right:15px;
-    font-size:15px;
 }
 
 #custom-launcher {
-    font-size:15px;
     margin-left:15px;
     margin-right:10px;
 }
@@ -172,7 +174,6 @@ Arc-Dark Color Scheme
 
 #mpd {
    background-image: linear-gradient(to right, @base1,@base2, @base1);
-    font-size: 12px;
    color: #FFFFFF;
 }
      

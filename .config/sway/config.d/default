@@ -8,7 +8,7 @@ set $up k
 set $right l
 
 # Your preferred terminal emulators
-set $term-float foot
+set $term-float foot 
 
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
@@ -200,8 +200,7 @@ bindsym $mod+r mode "resize"
 #
 # App shortcuts
 #
-    bindsym $mod+n exec thunar
-    bindsym $mod+o exec firefox
+    bindsym $mod+o exec brave
 #
 # Screenshots
 #

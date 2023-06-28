@@ -2,15 +2,12 @@
 #exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 #exec --no-startup-id /nix/store/2n0k96njvgmazv8sr96jlzmyidffmdk7-polkit-gnome-0.105/libexec/polkit-gnome-authentication-agent-1
 # Desktop notifications
-exec mako
+exec mako --default-timeout=5000
 
 # GTK3 applications take a long time to start
-exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
-exec hash dbus-update-activation-environment 2>/dev/null && \
-     dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK
-     
-# Welcome App
-exec dex -a -s /etc/xdg/autostart/:~/.config/autostart/  
+# exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
 
-# Sway Fader
-# exec python3 ~/.config/sway/scripts/swayfader.py      
+exec --no-startup-id dbus-update-activation-environment --all
+
+exec mpd ~/.config/mpd/mpd.conf
+exec gnome-keyring-daemon -r -d

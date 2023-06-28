@@ -1,0 +1,2 @@
+host = /home/egoist/.config/mpd/socket
+color list-bold = red

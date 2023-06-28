@@ -3,10 +3,8 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 { config, pkgs, ... }:
-let
-  unstable = import <unstable> {};
-in
-{
+let unstable = import <unstable> { config.allowUnfree = true; };
+in {
   imports = [ # Include the results of the hardware scan.
     ./hardware-configuration.nix
   ];
@@ -18,103 +16,43 @@ in
 
   networking.hostName = "Egoist"; # Define your hostname.
 
-  networking.nameservers = [ "45.90.28.69" "45.90.30.69" ];
-  networking.networkmanager.dns = "none";
+  networking.nameservers = [ "10.0.1.1" ];
+  networking.extraHosts = "";
+  # We use dhcpcd here. no network manager BS.
+  networking.dhcpcd.enable = true;
   networking.dhcpcd.extraConfig = "nohook resolv.conf";
   services.resolved.enable = false;
-  # Pick only one of the below networking options.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  networking.networkmanager.enable = true;
   nixpkgs.config.allowUnfree = true;
   boot.initrd.kernelModules = [ "amdgpu" ];
 
   # Set your time zone.
-  # time.timeZone = "Europe/Amsterdam";
   time.timeZone = "US/Central";
-
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Select internationalisation properties.
-  # i18n.defaultLocale = "en_US.UTF-8";
-  # console = {
-  #   font = "Lat2-Terminus16";
-  #   keyMap = "us";
-  #   useXkbConfig = true; # use xkbOptions in tty.
-  # };
-
-  # Enable the X11 windowing system.
-  # services.xserver.enable = true;
-
-  # Configure keymap in X11
-  # services.xserver.layout = "us";
-  # services.xserver.xkbOptions = {
-  #   "eurosign:e";
-  #   "caps:escape" # map caps to escape.
-  # };
-
-  # Enable CUPS to print documents.
-  # services.printing.enable = true;
-
-  # Enable sound.
-  #sound.enable = true;
-  # hardware.pulseaudio.enable = true;
 
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
     alsa.enable = true;
     alsa.support32Bit = true;
-    #pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
+    # Pulse/Jack isn't really needed these days as many have adopted pipewire.
+    # pulse.enable = true;
+    # jack.enable = true;
+  };
+  environment.etc = let json = pkgs.formats.json { };
+  in {
+    "pipewire/pipewire.d/92-low-latency.conf".source =
+      json.generate "92-low-latency.conf" {
+        context.properties = {
+          link.max-buffers = 16;
+          default.clock.allowed-rates = [ 44100 48000 88200 96000 ];
+          core.daemon = true;
+          core.name = "pipewire-0";
+          #default.clock.quantum = 32;
+          #default.clock.min-quantum = 32;
+          #default.clock.max-quantum = 32;
+        };
+      };
   };
 
-  services.pipewire = {
-    config.pipewire = {
-      "context.properties" = {
-        "link.max-buffers" = 16;
-        "log.level" = 2;
-        "default.clock.allowed-rates" = [ 44100 48000 88200 96000 ];
-       # "default.clock.quantum" = 50000;
-       # "default.clock.min-quantum" = 50000;
-       # "default.clock.max-quantum" = 50000;
-        "core.daemon" = true;
-        "core.name" = "pipewire-0";
-      };
-#      "context.modules" = [
-#        {
-#          name = "libpipewire-module-rtkit";
-#          args = {
-#            "nice.level" = -15;
-#            "rt.prio" = 88;
-#            "rt.time.soft" = 200000;
-#            "rt.time.hard" = 200000;
-#          };
-#          flags = [ "ifexists" "nofail" ];
-#        }
-#        { name = "libpipewire-module-protocol-native"; }
-#        { name = "libpipewire-module-profiler"; }
-#        { name = "libpipewire-module-metadata"; }
-#        { name = "libpipewire-module-spa-device-factory"; }
-#        { name = "libpipewire-module-spa-node-factory"; }
-#        { name = "libpipewire-module-client-node"; }
-#        { name = "libpipewire-module-client-device"; }
-#        {
-#          name = "libpipewire-module-portal";
-#          flags = [ "ifexists" "nofail" ];
-#        }
-#        {
-#          name = "libpipewire-module-access";
-#          args = { };
-#        }
-#        { name = "libpipewire-module-adapter"; }
-#        { name = "libpipewire-module-link-factory"; }
-#        { name = "libpipewire-module-session-manager"; }
-#      ];
-    };
-  };
   hardware.opengl.extraPackages = with pkgs; [
     rocm-opencl-icd
     rocm-opencl-runtime
@@ -126,8 +64,14 @@ in
 
   # Turn on nix flakes (TODO: Remove once it's no longer experimental)
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings = {
+    keep-outputs = true;
+    keep-derivations = true;
+  };
+  environment.pathsToLink = [ "/share/nix-direnv" ];
 
-  environment.variables.EDITOR = "vim";
+  environment.variables.EDITOR = "hx";
+
   nix.settings.auto-optimise-store = true;
   nix = {
     gc = {
@@ -145,45 +89,45 @@ in
     persist = true;
   }];
   users.users.egoist = {
-    shell = pkgs.zsh;
+    shell = unstable.fish;
     isNormalUser = true;
     extraGroups = [ "wheel" "libvirtd" ]; # Enable ‘sudo’ for the user.
     packages = with pkgs; [
+      unstable.brave
       firefox
       fzf
       git
       irssi
       librewolf
       mpc_cli
+      mpv
+      ncmpc
       nomacs
       obs-studio
       qbittorrent
-      thunderbird
-      udisks2
+      tealdeer
+      unstable.thunderbird
+      vscode
       unzip
       vim
-      vimpc
       vlc
       wireguard-tools
       xdg-utils
-      unstable.brave
     ];
   };
   # Enable Fish
-  #programs.fish.enable = true;
+  # programs.fish.enable = true;
 
   programs.sway = {
     enable = true;
     wrapperFeatures.gtk = true;
     extraPackages = with pkgs; [
-      #arc-theme
-      #brightnessctl
-      #solarc-gtk-theme
-      #zafiro-icons
+      gnome.adwaita-icon-theme
       acpi
-      alacritty
+      unstable.imhex
+      kitty
       dex
-      egl-wayland
+      unstable.egl-wayland
       foot
       grim
       gtk-engine-murrine
@@ -192,23 +136,21 @@ in
       jq
       mako
       networkmanagerapplet
-      oksh
-      phinger-cursors
       polkit_gnome
       slurp
       sway-contrib.grimshot
       swaybg
       swayidle
       swayimg
-      swaylock
+      mpd
+      swaylock-effects
       sysstat
       unstable.waybar
-      wayland-protocols
+      unstable.wayland-protocols
       wf-recorder
       wget
       wl-clipboard
       wofi
-      xdg-desktop-portal-wlr
       xed
     ];
     extraSessionCommands = "";
@@ -228,10 +170,11 @@ in
 
     ## mozilla
     MOZ_ENABLE_WAYLAND = "1";
+    NIXOS_OZONE_WL = "1";
     ## libreoffice
     SAL_USE_VCLPLUGIN = "gtk3";
     ## qt
-    QT_QPA_PLATFORM = "wayland-egl";
+    QT_QPA_PLATFORM = "wayland";
     QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
     ## efl
     ECORE_EVAS_ENGINE = "wayland_egl";
@@ -242,28 +185,30 @@ in
     _JAVA_AWT_WM_NONREPARENTING = "1";
     ## xdg session
     XDG_SESSION_TYPE = "wayland";
+    XDG_SESSION_DESKTOP = "sway";
     XDG_CURRENT_DESKTOP = "sway";
   };
 
-  fonts.fonts = with pkgs;
-    [
-      (nerdfonts.override {
-        fonts = [
-          "FiraCode"
-          "DroidSansMono"
-          "IBMPlexMono"
-          "UbuntuMono"
-          "VictorMono"
-        ];
-      })
-	  noto-fonts
-	  noto-fonts-cjk
-	  noto-fonts-emoji
-    ];
+  fonts.fonts = with pkgs; [
+    (nerdfonts.override {
+      fonts = [
+        "FiraCode"
+        "DroidSansMono"
+        "IBMPlexMono"
+        "UbuntuMono"
+        "Ubuntu"
+        "VictorMono"
+      ];
+    })
+    noto-fonts
+    twitter-color-emoji
+    #noto-fonts-emoji
+    noto-fonts-cjk
+  ];
 
-  programs.waybar.enable = true;
+  fonts.fontconfig = { defaultFonts = { emoji = [ "Twitter Color Emoji" ]; }; };
 
-  qt5.platformTheme = "qt5ct";
+  qt.platformTheme = "qt5ct";
   programs.steam = {
     enable = true;
     remotePlay.openFirewall =
@@ -275,49 +220,56 @@ in
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  # users.users.alice = {
-  #   isNormalUser = true;
-  #   extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
-  #   packages = with pkgs; [
-  #     firefox
-  #     thunderbird
-  #   ];
-  # };
   # system wide installed packages:
-  environment.systemPackages = with pkgs; [ virt-manager ];
+  environment.systemPackages = with pkgs; [
+    pinentry-curses
+    # Android Device Support (Helpful for mount)
+    android-udev-rules
+    direnv
+    # Enable General Man Pages
+    man-pages
+    man-pages-posix
+    nix-direnv
+    nix-index
+    unstable.helix
+    unstable.lapce
+    virt-manager
+  ];
 
+  # yubikey to enable ssh key
 
+  services.udev.packages = [ pkgs.yubikey-personalization ];
+  programs.gnupg.agent = {
+    enable = true;
+    pinentryFlavor = "curses";
+    enableSSHSupport = true;
+  };
+
+  # For VSCode (Disabled now because VSCode is being such a bitch right)
+  services.gnome.gnome-keyring.enable = true;
 
   # enable libvirtd
   virtualisation.libvirtd.enable = true;
   programs.dconf.enable = true;
 
+  #MPD Currently user defined under .config and ran from sway
 
-  #MPD
-  services.mpd.user = "egoist";
-  systemd.services.mpd.environment = {
-    # https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/609
-    XDG_RUNTIME_DIR = "/run/user/1000"; 
-  };
-  services.mpd = {
-  enable = true;
-  musicDirectory = "/home/egoist/Music";
-  extraConfig = ''
-    auto_update "yes"
-	audio_output {
-	  type "pipewire"
-	  name "My PipeWire Output"
-	}
-  '';
-  };
-
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  # environment.systemPackages = with pkgs; [
-  #   vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  #   wget
-  # ];
+  #  services.mpd.user = "egoist";
+  #  systemd.services.mpd.environment = {
+  #    # https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/609
+  #    XDG_RUNTIME_DIR = "/run/user/1000";
+  #  };
+  #  services.mpd = {
+  #  enable = true;
+  #  musicDirectory = "/home/egoist/Music";
+  #  extraConfig = ''
+  #    auto_update "yes"
+  #	audio_output {
+  #	  type "pipewire"
+  #	  name "My PipeWire Output"
+  #	}
+  #  '';
+  #  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -327,36 +279,44 @@ in
   #   enableSSHSupport = true;
   # };
 
-  # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
-
   # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  #networking.firewall.enable = false;
 
-  # VPN Config
+  #  networking.firewall.allowedTCPPorts = [ ];
+  # networking.firewall.interfaces."virbr0".allowedTCPPorts = [
+  #   8000
+  # ];
 
-#  networking.wg-quick.interfaces = {
-#    wg0 = {
-#      address = [ "172.25.12.7/32" ];
-#      dns = [ "172.16.0.1" ];
-#      privateKeyFile = "/home/egoist/wireguard-keys/private";
-#
-#      peers = [
-#        {
-#          publicKey = "LvWf548mFddi8PTrIGL6uD1/l85LU8z0Rc8tpvw2Vls=";
-#          allowedIPs = [ "0.0.0.0/0" ];
-#          endpoint = "96.44.189.197:2049";
-#          persistentKeepalive = 25;
-#        }
-#      ];
-#    };
-#  };
+  # networking = {
+  #   useDHCP = false;
+  #   bridges = { br0 = { interfaces = [ "enp4s0" ]; }; };
+  #   interfaces = { br0 = { useDHCP = true; }; };
+  # };
 
+  networking.firewall.enable = true;
+
+  # NOTE: nftables might get absorbed into firewall later on.
+  networking.nftables.enable = true;
+
+  # networking.firewall.interfaces."br0".allowedTCPPorts = [ 8000 ];
+
+  #  # VPN Config Currently Router Level but it's here juuust in case.
+  #
+  #  networking.wg-quick.interfaces = {
+  #    wg0 = {
+  #      address = [ "172.30.77.2/32" ];
+  #      dns = [ "172.16.0.1" ];
+  #      privateKeyFile = "/home/egoist/.wireguard/peer_A.key";
+  #
+  #      peers = [
+  #        {
+  #          publicKey = "LvWf548mFddi8PTrIGL6uD1/l85LU8z0Rc8tpvw2Vls=";
+  #          allowedIPs = [ "0.0.0.0/0" ];
+  #          endpoint = "96.44.189.197:2049";
+  #          persistentKeepalive = 25;
+  #        }
+  #      ];
+  #    };
+  #  };
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you

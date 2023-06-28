@@ -3,6 +3,6 @@ TODO: Script this later with TRUN
 1 - Install Fish
 2 - Remove Greeting 
 3 - Install Fisher 
-4 - Install Hydro
+4 - Install tide
 
 

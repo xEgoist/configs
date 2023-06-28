@@ -1,17 +1,17 @@
-// Global 
+// Global
 {
     "layer": "top",
     "position": "top",
 
     // If height property would be not present, it'd be calculated dynamically
-    "height": 38,
+    "height": 42,
 
     "modules-left": [
         "custom/launcher",
         "sway/workspaces",
         "sway/mode",
     ],
- 
+
     "modules-center": [
     ],
 
@@ -21,9 +21,9 @@
         "idle_inhibitor",
         "memory",
         "cpu",
-       "wireplumber",
+       "custom/wpctl",
+        // "wireplumber",
         "clock",
-        // "tray",
         "custom/power",
     ],
 
@@ -32,20 +32,20 @@
     "idle_inhibitor": {
         "format": "{icon} ",
         "format-icons":{
-            "activated": "",
-            "deactivated": ""
+            "activated": "🍵",
+            "deactivated": "💤"
         }
     },
 
     "clock": {
-        "format-alt": " {:%e %b %Y}", // Icon: calendar-alt
+        "format-alt": "📅  {:%e %b %Y}",
         "format": "{:%H:%M}",
         "tooltip-format": "{:%e %B %Y}"
     },
 
     "cpu": {
         "interval": 5,
-        "format": "  {usage}% ({load})", // Icon: microchip
+        "format": "| ⚙️  {usage}% ({load}) |", // Icon: microchip
         "states": {
             "warning": 70,
             "critical": 90,
@@ -56,8 +56,8 @@
 
     "memory": {
         "interval": 5,
-        "format": "  {}%", // Icon: memory
-        "on-click": "xfce4-terminal -e 'htop'", 
+        "format": "| 💾 {}%", // Icon: memory
+        "on-click": "foot 'htop'",
         "states": {
             "warning": 70,
             "critical": 90
@@ -67,7 +67,7 @@
     "network": {
         "interval": 5,
         "format-wifi": "  {essid} ({signalStrength}%)", // Icon: wifi
-        "format-ethernet": "|   {ifname}: {ipaddr}/{cidr}", // Icon: ethernet
+        "format-ethernet": "| 🌐 {ifname}: {ipaddr}/{cidr} |", // Icon: ethernet
         "format-disconnected": "⚠  Disconnected",
         "tooltip-format": "{ifname}: {ipaddr}",
         "on-click": "xfce4-terminal -e 'nmtui'",
@@ -103,18 +103,27 @@
         }
     },
 
-    "wireplumber": {
-        "format": "{volume}% ",
-        "format-muted": "婢",
+   // "wireplumber": {
+   //     "format": "{volume}% 🔊 |",
+   //     "format-muted": "🔇 |",
+   //     "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+   //     "on-scroll-up": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+",
+   //     "on-scroll-down": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%-",
+   // },
+    "custom/wpctl": {
+        "exec": "~/.config/waybar/scripts/wpctl.sh",
+        "interval": "once",
+        "format": "{} |",
         "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
         "on-scroll-up": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+",
         "on-scroll-down": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%-",
     },
 
     "mpd": {
-        "format": "| {stateIcon} {consumeIcon}{randomIcon}{repeatIcon}{singleIcon}{artist} - {album} - {title} ({elapsedTime:%M:%S}/{totalTime:%M:%S}) ⸨{songPosition}|{queueLength}⸩ {volume}%  ",
-        "format-disconnected": "Disconnected ",
-        "format-stopped": "{consumeIcon}{randomIcon}{repeatIcon}{singleIcon}Stopped ",
+        "server": "/home/egoist/.config/mpd/socket",
+        "format": "| {stateIcon} {consumeIcon}{randomIcon}{repeatIcon}{singleIcon}{artist} - {album} - {title} ({elapsedTime:%M:%S}/{totalTime:%M:%S}) ⸨{songPosition}|{queueLength}⸩ {volume}% 🎵 ",
+        "format-disconnected": "Disconnected 🎵",
+        "format-stopped": "{consumeIcon}{randomIcon}{repeatIcon}{singleIcon}Stopped 🎵",
         "unknown-tag": "N/A",
         "interval": 2,
         "consume-icons": {
@@ -136,13 +145,8 @@
         },
         "tooltip-format": "MPD (connected)",
         "tooltip-format-disconnected": "MPD (disconnected)",
-        "on-click": "mpc toggle",
+        "on-click": "mpc --host /home/egoist/.config/mpd/socket toggle",
     },
-
-    "tray": {
-        "icon-size": 14,
-        "spacing":10,
-     },
 
     "custom/firefox": {
         "format": "",

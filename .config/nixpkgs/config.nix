@@ -1,14 +1,5 @@
 { pkgs, ... }:
 let
-  discordRPC = pkgs.vimUtils.buildVimPlugin {
-    name = "";
-    src = pkgs.fetchFromGitHub {
-      owner = "pucka906";
-      repo = "vdrpc";
-      rev = "master";
-      sha256 = "y4dh9cv68a3YaTAuHDUP01nlKr1cfCzRGqwawLXPFx0=";
-    };
-  };
   unstable = import <unstable> { };
   homeDir = builtins.getEnv "HOME";
 in {
@@ -74,99 +65,46 @@ in {
             packadd! matchit
           endif
 
+          set backupcopy=yes
           set nobackup
-          set noundofile
+          set undodir=~/.vim/undos
+          set undofile
           set noswapfile
           set tabstop=4
           set shiftwidth=4
           set number
-          set cc=80
+          set cc=100
           set clipboard=unnamedplus
           set expandtab
+          colorscheme torte
+          set splitright
+          set viminfo='500,<200,s100
+          set viminfofile=~/.vim/viminfo
 
           " Highlight extra whitespace.
           " http://vim.wikia.com/wiki/Highlight_unwanted_spaces
+
           highlight ExtraWhitespace ctermbg=lightred guibg=lightred
+
           " Show trailing whitespace and spaces before a tab:
           match ExtraWhitespace /\s\+$\| \+\ze\t/
-          nnoremap <F5> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar><CR>
+          nnoremap <F5> :silent! %s/\s\+$//e<Bar>silent! %s/ \+\ze\t//e<CR>
+
           let &t_SI = "\e[6 q"
           let &t_EI = "\e[2 q"
           autocmd VimLeave * silent !echo -ne "\e[6 q"
-          cnoremap w!! execute 'silent! write !sudo tee % >/dev/null' <bar> edit!
+          cnoremap w!! execute 'silent! write !doas tee % >/dev/null' <bar> edit!
         '';
         #vimrcConfig.plug.plugins = with pkgs.vimPlugins; [zig-vim];
         vimrcConfig.packages.myVimPackage = with pkgs.vimPlugins; {
-          start = [ zig-vim editorconfig-vim discordRPC ];
-        };
-      };
-      myNeovim = neovim.override {
-        configure = {
-          customRC = ''
-            syntax on
-            filetype on
-            set expandtab
-            set bs=2
-            set tabstop=2
-            set shiftwidth=2
-            set smartindent
-            set smartcase
-            set ignorecase
-            set modeline
-            set nocompatible
-            set encoding=utf-8
-            set hlsearch
-            set history=700
-            set background=dark
-            set tabpagemax=1000
-            set ruler
-            set nojoinspaces
-            set shiftround
-            set cc=100
-            colorscheme carbonfox
-            let g:c_syntax_for_h = 1
-            set nolbr
-            set tw=0
-            set pastetoggle=<F2>
-            " My Mappings
-            " Save using doas
-            cmap w!! w !doas tee % >/dev/null
-            " ctrl v to copy paste from wl-copy for wayland
-            xnoremap "+y y:call system("wl-copy", @")<cr>
-            nnoremap "+p :let @"=substitute(system("wl-paste --no-newline"), '<C-v><C-m>', ''', 'g')<cr>p
-            nnoremap "*p :let @"=substitute(system("wl-paste --no-newline --primary"), '<C-v><C-m>', ''', 'g')<cr>p
-            vmap <C-c> "+yi
-            vmap <C-x> "+c
-            vmap <C-v> c<ESC>"+p
-            imap <C-v> <ESC>"+pa
-            " Hate accidentally pressing these
-            map <End> <Nop>
-            map <Home> <Nop>
-            map <PageUp> <Nop>
-            map <PageDown> <Nop>
-            set backupcopy=yes
-            map <ScrollWheelUp> <C-Y>
-            map <ScrollWheelDown> <C-E>
-            set so=999
-            let g:zig_fmt_autosave = 0
-            au VimLeave * set guicursor=a:ver90
-            set mouse=
-            lua require('init')
-            lua require('plugins')
-          '';
-          packages.myVimPackage = with pkgs.vimPlugins; {
-            start = [ zig-vim editorconfig-vim packer-nvim nvim-treesitter ];
-            opt = [ ];
-          };
+          start = [ zig-vim editorconfig-vim ];
         };
       };
       all = pkgs.buildEnv {
         name = "all";
         paths = [
           my_vim
-          #unstable.myNeovim
           fd
-          unstable.helix
           entr
           ripgrep
         ];

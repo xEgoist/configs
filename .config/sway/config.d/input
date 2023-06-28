@@ -13,9 +13,11 @@ input type:touchpad {
 # Read `man 5 sway-input` for more information about this section.
 #
 input type:keyboard xkb_layout "us"
-input  11944:8707:Wings_Tech_Xtrfy_M4 {
+input  "7805:11730:ROCCAT_ROCCAT_Kone_Pure_Ultra" {
 	accel_profile "flat"
-	pointer_accel -0.655
+}
+input "21057:1546:RAMA_WORKS_M60-A_Mouse" {
+	pointer_accel -0.6
 }
 exec_always {
     'swaymsg input type:keyboard xkb_layout "$(localectl status | grep "X11 Layout" | sed -e "s/^.*X11 Layout://")"'
