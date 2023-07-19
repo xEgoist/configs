@@ -16,14 +16,15 @@
           name = "C Flake";
           packages = with pkgs; [
             ccache
+            llvmPackages_16.lldb
+            llvmPackages_16.llvm
+            llvmPackages_16.bintools
             clang-tools_16
+            cmocka
             cmake
             criterion
             fmt
             gf
-            llvmPackages_16.lld
-            llvmPackages_16.lldb
-            llvmPackages_16.llvm
             meson
             ninja
             pkg-config

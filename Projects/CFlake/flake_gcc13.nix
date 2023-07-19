@@ -16,11 +16,12 @@
           packages = with pkgs; [
             ccache
             clang-tools_16
-            gdb
             cmake
             criterion
             fmt
             gf
+            gdb
+            valgrind
             meson
             ninja
             pkg-config
