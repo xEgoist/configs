@@ -8,17 +8,17 @@ set $up k
 set $right l
 
 # Your preferred terminal emulators
-set $term-float foot 
+set $term-float foot
 
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
 set $menu wofi -c ~/.config/wofi/config -I
 
-set $powermenu ~/.config/waybar/scripts/power-menu.sh
 
 ### Idle configuration
 exec swayidle -w\
+    timeout 1080 'systemctl suspend'\
     timeout 1070 'swaylock -f -C ~/.config/swaylock/config'\
     timeout 770 'swaymsg "output * dpms off"' \
     resume 'swaymsg "output * dpms on"' \
@@ -200,7 +200,7 @@ bindsym $mod+r mode "resize"
 #
 # App shortcuts
 #
-    bindsym $mod+o exec brave
+    bindsym $mod+o exec librewolf
 #
 # Screenshots
 #

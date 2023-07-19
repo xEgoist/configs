@@ -1,5 +1,4 @@
 indicator-caps-lock
-clock
 image=$HOME/.config/sway/bg/0001.jpg
 scaling=fill
 font=UbuntuMono

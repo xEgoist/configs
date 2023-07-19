@@ -1,13 +1,13 @@
 # Apply gtk theming
 exec_always ~/.config/sway/scripts/import-gsettings
-# focus_follows_mouse no 
+focus_follows_mouse always
 
 # Set inner/outer gaps
-gaps inner 0
-gaps outer 0
+gaps inner 4
+gaps outer 1
 
 # Hide titlebar on windows:
-default_border pixel 4
+default_border pixel 3
 
 # Default Font
 font pango:Noto Sans Regular 10
@@ -34,4 +34,9 @@ client.background       #F8F8F2
 # Status Bar:
 #
 # Read `man 5 sway-bar` for more information about this section.
-bar swaybar_command waybar
+# exec_always kill yambar
+# exec_always yambar
+
+exec_always "sh -c 'pkill yambar; yambar'"
+
+

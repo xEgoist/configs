@@ -5,7 +5,8 @@
 { config, pkgs, ... }:
 let unstable = import <unstable> { config.allowUnfree = true; };
 in {
-  imports = [ # Include the results of the hardware scan.
+  imports = [
+    # Include the results of the hardware scan.
     ./hardware-configuration.nix
   ];
 
@@ -16,11 +17,11 @@ in {
 
   networking.hostName = "Egoist"; # Define your hostname.
 
-  networking.nameservers = [ "10.0.1.1" ];
+  #networking.nameservers = [ "10.0.1.1" ];
   networking.extraHosts = "";
   # We use dhcpcd here. no network manager BS.
   networking.dhcpcd.enable = true;
-  networking.dhcpcd.extraConfig = "nohook resolv.conf";
+  #networking.dhcpcd.extraConfig = "nohook resolv.conf";
   services.resolved.enable = false;
   nixpkgs.config.allowUnfree = true;
   boot.initrd.kernelModules = [ "amdgpu" ];
@@ -28,30 +29,53 @@ in {
   # Set your time zone.
   time.timeZone = "US/Central";
 
+
+  # Enable Git and config it
+  programs.git = {
+    enable = true;
+    config = {
+      init = {
+        defaultBranch = "main";
+      };
+      merge = {
+        conflictStyle = "zdiff3";
+      };
+      core = {
+        editor = "hx";
+      };
+    };
+  };
+
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
     alsa.enable = true;
     alsa.support32Bit = true;
+    wireplumber.enable = true;
     # Pulse/Jack isn't really needed these days as many have adopted pipewire.
+    # Firefox is currently not ideal for recording with only pipewire.
+    # However, when disabling all the garbage audio 'enhancement' stuff, it works flawlessly.
+    # I hate when recording software tries to "help" anyway. No time have i ever wanted AGC!.
+    # https://wiki.archlinux.org/title/Firefox/Tweaks#Disable_WebRTC_audio_post_processing
+    # Otherwise if nothing works, pulse may be enabled here.
+
     # pulse.enable = true;
     # jack.enable = true;
   };
-  environment.etc = let json = pkgs.formats.json { };
-  in {
-    "pipewire/pipewire.d/92-low-latency.conf".source =
-      json.generate "92-low-latency.conf" {
-        context.properties = {
-          link.max-buffers = 16;
-          default.clock.allowed-rates = [ 44100 48000 88200 96000 ];
-          core.daemon = true;
-          core.name = "pipewire-0";
-          #default.clock.quantum = 32;
-          #default.clock.min-quantum = 32;
-          #default.clock.max-quantum = 32;
+  environment.etc =
+    let json = pkgs.formats.json { };
+    in {
+      "pipewire/pipewire.conf.d/92-low-latency.conf".source =
+        json.generate "92-low-latency.conf" {
+          context.properties = {
+            link.max-buffers = 16;
+            default.clock.allowed-rates = [ 44100 48000 88200 96000 ];
+            default.clock.quantum = 32;
+            default.clock.min-quantum = 32;
+            default.clock.max-quantum = 32;
+          };
         };
-      };
-  };
+    };
 
   hardware.opengl.extraPackages = with pkgs; [
     rocm-opencl-icd
@@ -94,11 +118,9 @@ in {
     extraGroups = [ "wheel" "libvirtd" ]; # Enable ‘sudo’ for the user.
     packages = with pkgs; [
       unstable.brave
-      firefox
+      unstable.librewolf
       fzf
-      git
       irssi
-      librewolf
       mpc_cli
       mpv
       ncmpc
@@ -107,11 +129,10 @@ in {
       qbittorrent
       tealdeer
       unstable.thunderbird
-      vscode
+      unstable.vscode
       unzip
       vim
       vlc
-      wireguard-tools
       xdg-utils
     ];
   };
@@ -125,7 +146,7 @@ in {
       gnome.adwaita-icon-theme
       acpi
       unstable.imhex
-      kitty
+      alacritty
       dex
       unstable.egl-wayland
       foot
@@ -135,7 +156,6 @@ in {
       htop
       jq
       mako
-      networkmanagerapplet
       polkit_gnome
       slurp
       sway-contrib.grimshot
@@ -143,15 +163,14 @@ in {
       swayidle
       swayimg
       mpd
-      swaylock-effects
+      swaylock
       sysstat
-      unstable.waybar
+      yambar
       unstable.wayland-protocols
       wf-recorder
       wget
       wl-clipboard
       wofi
-      xed
     ];
     extraSessionCommands = "";
   };
@@ -192,8 +211,6 @@ in {
   fonts.fonts = with pkgs; [
     (nerdfonts.override {
       fonts = [
-        "FiraCode"
-        "DroidSansMono"
         "IBMPlexMono"
         "UbuntuMono"
         "Ubuntu"
@@ -202,7 +219,6 @@ in {
     })
     noto-fonts
     twitter-color-emoji
-    #noto-fonts-emoji
     noto-fonts-cjk
   ];
 
@@ -252,7 +268,7 @@ in {
   virtualisation.libvirtd.enable = true;
   programs.dconf.enable = true;
 
-  #MPD Currently user defined under .config and ran from sway
+  #MPD Currently user defined under .config and runs from sway. Running it system wide is a bit dificult
 
   #  services.mpd.user = "egoist";
   #  systemd.services.mpd.environment = {
@@ -271,13 +287,7 @@ in {
   #  '';
   #  };
 
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
   # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
 
   # Open ports in the firewall.
 
@@ -286,6 +296,7 @@ in {
   #   8000
   # ];
 
+  # In case I decide I need to bride my adapter for VMs (bad idea currently)
   # networking = {
   #   useDHCP = false;
   #   bridges = { br0 = { interfaces = [ "enp4s0" ]; }; };

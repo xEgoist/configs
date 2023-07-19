@@ -1,0 +1,121 @@
+---
+
+bar:
+  height: 42
+  location: top
+  background: 3E3F67ff
+  font: Ubuntu Nerd Font:pixelsize=16
+  center:
+    - mpd:
+        host: /home/egoist/.config/mpd/socket
+        anchors:
+          list: &artist_album_title
+            spacing: 0
+            on-click:
+              left: mpc --host /home/egoist/.config/mpd/socket toggle
+              next: mpc --host /home/egoist/.config/mpd/socket next
+              previous: mpc --host /home/egoist/.config/mpd/socket prev
+            items:
+              - map:
+                  conditions:
+                    random: {string: {text: "🔀 "}}
+              - map:
+                  conditions:
+                    repeat: {string: {text: "🔁 "}}
+              - map:
+                  conditions:
+                    consume: {string: {text: "✂️ "}}
+              - map:
+                  conditions:
+                    state == playing: {string: {text: "{artist}"}}
+                    state == paused: {string: {text: "{artist}", foreground: ffffff66}}
+              - string: {text: " - ", foreground: ffffff66}
+              - map:
+                  conditions:
+                    state == playing: {string: {text: "{album}"}}
+                    state == paused: {string: {text: "{album}", foreground: ffffff66}}
+              - string: {text: " - ", foreground: ffffff66}
+              - map:
+                  conditions:
+                    state == playing: {string: {text: "{title}", foreground: ffa0a0ff}}
+                    state == paused: {string: {text: "{title}", foreground: ffffff66}}
+
+        content:
+          map:
+            margin: 10
+            conditions:
+              state == offline: {string: {text: offline, foreground: ff0000ff}}
+              state == stopped: {string: {text: stopped}}
+              state == paused: {list: *artist_album_title}
+              state == playing: {list: *artist_album_title}
+
+
+  right:
+    - network:
+        name: enp4s0
+        content:
+            - map:
+                conditions:
+                  state == up: {string: {text: "🌐{name}: {ipv4}"}}
+                  state == down: {string: {text: "🌐{name}: {ipv4}", foreground: ffffff66}}
+                  state == "not present": {string: {text: "🌐 NOT PRESENT", foreground: ffffff66}}
+                  state == unknown: {string: {text: "🌐{name}: {ipv4}", foreground: ffffff66}}
+            - string: { text: " |", right-margin: 5 }
+            
+    - pipewire:
+        anchors:
+          volume: &volume
+            conditions:
+              type == "source": { empty: {} }
+              muted: 
+                - string: {text: "{linear_volume}%", foreground: ff0000ff }
+                - string: { text: " |", right-margin: 5 }
+              ~muted:
+                - string: {text: "{linear_volume}%" }
+                - string: { text: " |", right-margin: 5 }
+        content:
+          list:
+            on-click:
+              left: "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+              wheel-up: "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+"
+              wheel-down: "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%-"
+            items:
+              - map:
+                  conditions:
+                    type == "sink" && ~muted:
+
+                      - ramp:
+                          tag: linear_volume
+                          items:
+                            - string: {text: ""}
+                            - string: {text: ""}
+                    type == "sink" && muted:
+                      - string: {text: "󰝟"}
+              - map:
+                  <<: *volume
+
+    - clock:
+        date-format: "%Y-%m-%d"
+        time-format: "%T"
+        content:
+          - string: {text: " {date} "}
+          - string: {text: "| "}
+          - string: {text: " {time}", right-margin: 20}
+
+
+  left:
+    - cpu:
+        poll-interval: 2500
+        content:
+          map:
+            conditions:
+             id == -1 && cpu <= 80: { string: {text: "  {cpu}%", left-margin: 10 } }
+             id == -1 && cpu > 80: { string: {text: "  {cpu}%", left-margin: 10, foreground: ff0000ff} }
+
+    - mem:
+        interval: 2500
+        content:
+          map:
+            conditions:
+              percent_used <= 80: { string: {text: "  {used:mb}MB", left-margin: 10 } }
+              percent_used > 80: { string: {text: "  {used:mb}MB", left-margin: 10, foreground: ff0000ff} }
