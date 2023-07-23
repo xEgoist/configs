@@ -1,5 +1,5 @@
 function clangfmt -d "Run clang-format in a git project"
-    if not test -d .git
+    if not test -d .git -o -d .sl
         if test (count $argv) -ne 1
             echo "Not a git repo, --force must be used"
             return -1

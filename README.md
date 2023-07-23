@@ -13,8 +13,7 @@ non-nixos systems:
 
 ## Note:
 
-Dotfiles aren't complete. There is so much configs going inside .config that needs to be automated, especially the sway configs.
-
+This is a mildly personalized config for myself. There are many parts that requires tinkering, especially settings defined under my username. However, feel free to use any part of my config files.
 
 ## Common Problems:
 

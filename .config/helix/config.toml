@@ -1,8 +1,19 @@
 theme = "amberwood"
 [editor]
-rulers = [100]
+  rulers = [100]
+  auto-pairs = false
+  text-width = 100
 [editor.cursor-shape]
-insert = "bar"
+  insert = "bar"
 
 [editor.lsp]
-display-signature-help-docs = false
+  display-signature-help-docs = false
+
+
+[editor.soft-wrap]
+  enable = true
+  wrap-at-text-width = true
+
+
+[keys.normal]
+  "X" = [ "extend_line_up", "extend_to_line_bounds" ]

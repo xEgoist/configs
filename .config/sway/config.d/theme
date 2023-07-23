@@ -1,5 +1,4 @@
 # Apply gtk theming
-exec_always ~/.config/sway/scripts/import-gsettings
 focus_follows_mouse always
 
 # Set inner/outer gaps
