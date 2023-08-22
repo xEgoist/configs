@@ -1,9 +1,9 @@
 # Assign workspaces
 
 for_window [app_id="firefox" title="^Picture-in-Picture$"] \
-    floating enable, move position 1750 2350, sticky enable
+    floating enable, move position 1600 2250, sticky enable
 for_window [app_id="librewolf" title="^Picture-in-Picture$"] \
-    floating enable, move position 1650 2300, sticky enable
+    floating enable, move position 1600 2200, sticky enable
 
 
 # set floating (nontiling) for special apps:

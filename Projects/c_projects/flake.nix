@@ -8,11 +8,11 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
-
+        inherit (pkgs.lib) optionals;
 
         # ---- MAIN SWITCHES ----
 
-        useLLVM = false;
+        useLLVM = true;
         useMold = false;
 
         # ----               ----
@@ -29,17 +29,16 @@
           name = "C Flake";
           packages = with pkgs;
 
-            (if useLLVM then
+            optionals (useLLVM)
               [
                 llvmPackages_16.lldb
                 llvmPackages_16.llvm
                 llvmPackages_16.bintools
               ]
-            else
-              [ gdb ]
-            ) ++
-            (if useMold then [ mold ] else [ ]) ++
+            ++
+            optionals (useMold) [ mold ] ++
             [
+              gdb
               ccache
               clang-tools_16
               cmocka
@@ -49,11 +48,8 @@
               meson
               ninja
               python3
-              # if pkgconf bugs occur, use pkg-config instead of these
-              libffi
-              pkgconf
-              # 
-
+              pkg-config
+              valgrind
 
               # pkgsCross.mingwW64.stdenv.cc
               # pkgsCross.mingwW64.windows.pthreads

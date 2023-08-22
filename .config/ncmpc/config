@@ -1,2 +1,4 @@
+colordef BLACK = 0, 0, 0
 host = /home/egoist/.config/mpd/socket
-color list-bold = red
+color list-bold  = red
+color background = BLACK

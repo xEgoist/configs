@@ -1,4 +1,4 @@
-theme = "amberwood"
+theme = "bogster"
 [editor]
   rulers = [100]
   auto-pairs = false
@@ -17,3 +17,8 @@ theme = "amberwood"
 
 [keys.normal]
   "X" = [ "extend_line_up", "extend_to_line_bounds" ]
+
+
+[editor.indent-guides]
+  render = true
+

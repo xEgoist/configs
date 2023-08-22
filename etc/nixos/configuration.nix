@@ -14,14 +14,15 @@ in {
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.supportedFilesystems = [ "ntfs" ];
+  boot.tmp.useTmpfs = true;
 
   networking.hostName = "Egoist"; # Define your hostname.
 
-  #networking.nameservers = [ "10.0.1.1" ];
+  # networking.nameservers = [ "1.1.1.1" ];
   networking.extraHosts = "";
   # We use dhcpcd here. no network manager BS.
   networking.dhcpcd.enable = true;
-  #networking.dhcpcd.extraConfig = "nohook resolv.conf";
+  # networking.dhcpcd.extraConfig = "nohook resolv.conf";
   services.resolved.enable = false;
   nixpkgs.config.allowUnfree = true;
   boot.initrd.kernelModules = [ "amdgpu" ];
@@ -62,20 +63,19 @@ in {
     # pulse.enable = true;
     # jack.enable = true;
   };
-  environment.etc =
-    let json = pkgs.formats.json { };
-    in {
-      "pipewire/pipewire.conf.d/92-low-latency.conf".source =
-        json.generate "92-low-latency.conf" {
-          context.properties = {
-            link.max-buffers = 16;
-            default.clock.allowed-rates = [ 44100 48000 88200 96000 ];
-            default.clock.quantum = 32;
-            default.clock.min-quantum = 32;
-            default.clock.max-quantum = 32;
-          };
-        };
-    };
+
+  environment.etc = {
+    "pipewire/pipewire.conf.d/92-low-latency.conf".text = ''
+      context.properties = {
+        link.max-buffers = 16;
+        default.clock.allowed-rates = [ 192000 96000 88200 48000 44100 ]
+        default.clock.quantum = 512
+        default.clock.min-quantum = 32
+        default.clock.max-quantum = 512
+        default.clock.quantum-limit = 1024
+      }
+    '';
+  };
 
   hardware.opengl.extraPackages = with pkgs; [
     rocm-opencl-icd
@@ -117,22 +117,26 @@ in {
     isNormalUser = true;
     extraGroups = [ "wheel" "libvirtd" ]; # Enable ‘sudo’ for the user.
     packages = with pkgs; [
-      unstable.brave
-      unstable.librewolf
+      # unstable.librewolf
+      firefox
       fzf
+      gpgme
       irssi
+      libnotify
       mpc_cli
       mpv
       ncmpc
+      neomutt
+      unstable.thunderbird
+      krita
+      w3m
       nomacs
       obs-studio
       qbittorrent
       tealdeer
-      unstable.thunderbird
-      unstable.vscode
+      brave
       unzip
-      vim
-      vlc
+      urlscan
       xdg-utils
     ];
   };
@@ -140,37 +144,38 @@ in {
   # programs.fish.enable = true;
 
   programs.sway = {
+   # package = unstable.sway;
     enable = true;
     wrapperFeatures.gtk = true;
     extraPackages = with pkgs; [
-      gnome.adwaita-icon-theme
       acpi
-      unstable.imhex
-      alacritty
+      btop
       dex
-      unstable.egl-wayland
-      foot
+      gnome.adwaita-icon-theme
       grim
-      gtk-engine-murrine
       gtk-layer-shell
-      htop
       jq
       mako
+      mlterm
+      mpd
       polkit_gnome
+      screen
       slurp
       sway-contrib.grimshot
       swaybg
       swayidle
       swayimg
-      mpd
       swaylock
       sysstat
-      yambar
+      unstable.egl-wayland
+      unstable.foot
+      unstable.imhex
       unstable.wayland-protocols
       wf-recorder
       wget
       wl-clipboard
       wofi
+      yambar
     ];
     extraSessionCommands = "";
   };
@@ -186,7 +191,7 @@ in {
   };
 
   environment.sessionVariables = rec {
-
+    EDITOR = "hx";
     ## mozilla
     MOZ_ENABLE_WAYLAND = "1";
     NIXOS_OZONE_WL = "1";
@@ -199,7 +204,7 @@ in {
     ECORE_EVAS_ENGINE = "wayland_egl";
     ELM_ENGINE = "wayland_egl";
     ## sdl No longer needed (Will cause steam to fail)
-    #SDL_VIDEODRIVER = "wayland";
+    # SDL_VIDEODRIVER = "wayland";
     ## java is bad
     _JAVA_AWT_WM_NONREPARENTING = "1";
     ## xdg session
@@ -220,9 +225,15 @@ in {
     noto-fonts
     twitter-color-emoji
     noto-fonts-cjk
+    font-awesome
+
   ];
 
-  fonts.fontconfig = { defaultFonts = { emoji = [ "Twitter Color Emoji" ]; }; };
+  fonts.fontconfig = {
+    defaultFonts = {
+      emoji = [ "Twitter Color Emoji" ];
+    };
+  };
 
   qt.platformTheme = "qt5ct";
   programs.steam = {
@@ -238,7 +249,7 @@ in {
 
   # system wide installed packages:
   environment.systemPackages = with pkgs; [
-    pinentry-curses
+    pinentry-qt
     # Android Device Support (Helpful for mount)
     android-udev-rules
     direnv
@@ -247,8 +258,8 @@ in {
     man-pages-posix
     nix-direnv
     nix-index
-    unstable.helix
-    unstable.lapce
+    helix
+    unstable.vscodium
     virt-manager
   ];
 
@@ -257,7 +268,7 @@ in {
   services.udev.packages = [ pkgs.yubikey-personalization ];
   programs.gnupg.agent = {
     enable = true;
-    pinentryFlavor = "curses";
+    pinentryFlavor = "qt";
     enableSSHSupport = true;
   };
 
@@ -268,24 +279,6 @@ in {
   virtualisation.libvirtd.enable = true;
   programs.dconf.enable = true;
 
-  #MPD Currently user defined under .config and runs from sway. Running it system wide is a bit dificult
-
-  #  services.mpd.user = "egoist";
-  #  systemd.services.mpd.environment = {
-  #    # https://gitlab.freedesktop.org/pipewire/pipewire/-/issues/609
-  #    XDG_RUNTIME_DIR = "/run/user/1000";
-  #  };
-  #  services.mpd = {
-  #  enable = true;
-  #  musicDirectory = "/home/egoist/Music";
-  #  extraConfig = ''
-  #    auto_update "yes"
-  #	audio_output {
-  #	  type "pipewire"
-  #	  name "My PipeWire Output"
-  #	}
-  #  '';
-  #  };
 
   # programs.mtr.enable = true;
 
@@ -305,10 +298,10 @@ in {
 
   networking.firewall.enable = true;
 
-  # NOTE: nftables might get absorbed into firewall later on.
-  networking.nftables.enable = true;
+  # NOTE: Using nftables seem to interfere with the automatic config that dnsmasq makes for virt-manager
+  #       Thus, I am disabling it for now until it gets absorbed into Nix's firewall
+  networking.nftables.enable = false;
 
-  # networking.firewall.interfaces."br0".allowedTCPPorts = [ 8000 ];
 
   #  # VPN Config Currently Router Level but it's here juuust in case.
   #

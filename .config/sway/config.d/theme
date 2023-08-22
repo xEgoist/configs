@@ -1,18 +1,18 @@
 # Apply gtk theming
+exec_always ~/.config/sway/scripts/import-gsettings
 focus_follows_mouse always
 
 # Set inner/outer gaps
-gaps inner 4
-gaps outer 1
+# gaps inner 2
+# gaps outer 2
 
-# Hide titlebar on windows:
-default_border pixel 3
+default_border pixel 4
 
 # Default Font
-font pango:Noto Sans Regular 10
+# font pango:Noto Sans Regular 10
 
 # Thin borders:
-# smart_borders on
+smart_borders off
 
 # Title format for windows
 for_window [shell="xdg_shell"] title_format "%title (%app_id)"
@@ -37,5 +37,3 @@ client.background       #F8F8F2
 # exec_always yambar
 
 exec_always "sh -c 'pkill yambar; yambar'"
-
-

@@ -1,0 +1,117 @@
+# IMAP settings
+set folder = 'imaps://MYEMAIL@MYEMAIL.net@mail.MYEMAIL.net:993'
+set imap_pass = "`gpg --quiet --for-your-eyes-only --no-tty --decrypt ~/.gnupg/encrypted-file.gpg`"
+set imap_check_subscribed
+
+# SMTP settings for sending email
+set smtp_url = 'smtps://MYEMAIL@MYEMAIL.net@mail.MYEMAIL.net:465'
+set from = 'MYEMAIL@MYEMAIL.net'
+set realname = 'WHO'
+set smtp_pass = "`gpg --quiet --for-your-eyes-only --no-tty --decrypt ~/.gnupg/encrypted-file.gpg`"
+
+# SSL settings
+set ssl_starttls = yes
+set ssl_force_tls = yes
+
+# MIME settings
+set charset="UTF-8"
+set send_charset="utf-8"
+
+# ---------------- INBOX SETTINGS ----------------
+
+set spoolfile = '+INBOX'
+set record = "+Sent"
+set trash = "+Trash"
+set postponed = "+Drafts"
+mailboxes =Inbox ='INBOX.spam' =Drafts ="Sent" =Trash
+set sort=threads
+set sort_aux=reverse-last-date-received
+unset imap_check_subscribed
+
+# ------------------------------------------------
+
+
+# ---------------- Misc settings -----------------
+
+set menu_scroll                      # scroll menu
+set tilde                            # use ~ to pad mutt
+set move=no                          # don't move messages when marking as read
+set mail_check = 120                 # check for new mail every 20 seconds
+set imap_keepalive = 900             # 15 minutes
+set sleep_time = 0                   # don't sleep when idle
+set wait_key = no		             # mutt won't ask "press key to continue"
+set envelope_from                    # which from?
+set fast_reply                       # skip to compose when replying
+set fcc_attach                       # save attachments with the body
+set forward_format = "Fwd: %s"       # format of subject when forwarding
+set forward_decode                   # decode when forwarding
+set forward_quote                    # include message in forwards
+set mime_forward                     # forward attachments as part of body
+set attribution = "On %d, %n wrote:" # format of quoting header
+set reply_to                         # reply to Reply to: field
+set reverse_name                     # reply as whomever it was to
+set include                          # include message in replies
+set text_flowed=yes                  # correct indentation for plain text
+unset sig_dashes                     # no dashes before sig
+unset markers
+set timeout=15
+timeout-hook 'exec sync-mailbox'
+set imap_passive = no
+set use_from = "yes"
+
+# ------------------------------------------------
+
+
+# ----------------- GPG -------------------
+set crypt_use_gpgme = yes
+set pgp_default_key="90CCE31B8918D0D1"
+
+# Automatically sign all out-going email
+set crypt_autosign = yes
+set crypt_replysign = yes
+set crypt_replyencrypt = yes
+set crypt_replysignencrypted = yes
+set crypt_verify_sig = yes
+set crypt_opportunistic_encrypt = no
+auto_view application/pgp-encrypted
+
+# -----------------------------------------
+
+
+# --------------- SIDE BAR ----------------
+
+set sidebar_visible # comment to disable sidebar by default
+set sidebar_short_path
+set sidebar_folder_indent
+set sidebar_format = "%B %* [%?N?%N / ?%S]"
+set mail_check_stats
+bind index,pager \CJ sidebar-prev
+bind index,pager \CK sidebar-next
+bind index,pager \CE sidebar-open
+
+
+# -----------------------------------------
+
+
+
+set editor=hx
+
+# urlscan instead of the default crap
+
+macro index,pager \cb "<pipe-message> urlscan<Enter>" "call urlscan to extract URLs out of a message"
+
+macro attach,compose \cb "<pipe-entry> urlscan<Enter>" "call urlscan to extract URLs out of a message"
+
+
+# Mark all as read
+
+macro index \Cr "T~U<enter><tag-prefix><clear-flag>N<untag-pattern>.<enter>" "Mark all messages as read"
+
+
+
+# Set Notification command to invoke mako.
+set new_mail_command="notify-send \
+   'New Email in %f' '%n new messages, %u unread.' &"
+
+
+macro attach 'V' "<pipe-entry>iconv -c --to-code=UTF8 > ~/.cache/neomutt/mail.html<enter><shell-escape>firefox --name firefox  ~/.cache/neomutt/mail.html 2>/dev/null<enter>"
