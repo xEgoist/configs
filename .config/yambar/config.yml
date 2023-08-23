@@ -1,7 +1,7 @@
 ---
 
 bar:
-  height: 42
+  height: 48
   location: top
   background: 3E3F67ff
   font: Ubuntu Nerd Font:pixelsize=16
@@ -51,28 +51,39 @@ bar:
 
 
   right:
+    # - script:
+    #     path: /home/egoist/Projects/c_projects/matcha/build/matcha
+    #     args: [ '-d', '--bar=yambar', '--off']
+    #     content:
+    #         - map:
+    #             on-click:
+    #               left: /home/egoist/Projects/c_projects/matcha/build/matcha --toggle
+    #             conditions:
+    #               inhibit: { string: { text: " " , right-margin: 5} }
+    #               ~inhibit: { string: { text: "󰒲 ", right-margin: 5, foreground: ffffff66 } }
+    #         - string: { text: "|", right-margin: 5}
     - network:
         name: enp4s0
         content:
             - map:
                 conditions:
-                  state == up: {string: {text: "🌐{name}: {ipv4}"}}
-                  state == down: {string: {text: "🌐{name}: {ipv4}", foreground: ffffff66}}
-                  state == "not present": {string: {text: "🌐 NOT PRESENT", foreground: ffffff66}}
-                  state == unknown: {string: {text: "🌐{name}: {ipv4}", foreground: ffffff66}}
-            - string: { text: " |", right-margin: 5 }
-            
+                  state == up: {string: {text: "🌐{name}: {ipv4}", right-margin: 5} }
+                  state == down: {string: {text: "🌐{name}: {ipv4}", foreground: ffffff66, right-margin: 5 } }
+                  state == "not present": {string: {text: "🌐 NOT PRESENT", foreground: ffffff66, right-margin: 5 }}
+                  state == unknown: {string: {text: "🌐{name}: {ipv4}", foreground: ffffff66, right-margin: 5 }}
+            - string: { text: "|", right-margin: 5 }
+
     - pipewire:
         anchors:
           volume: &volume
             conditions:
               type == "source": { empty: {} }
-              muted: 
-                - string: {text: "{linear_volume}%", foreground: ff0000ff }
-                - string: { text: " |", right-margin: 5 }
+              muted:
+                - string: {text: "{linear_volume}%", foreground: ff0000ff, right-margin: 5 }
+                - string: { text: "|", right-margin: 5 }
               ~muted:
-                - string: {text: "{linear_volume}%" }
-                - string: { text: " |", right-margin: 5 }
+                - string: {text: "{linear_volume}%" , right-margin: 5}
+                - string: { text: "|", right-margin: 5 }
         content:
           list:
             on-click:
@@ -87,10 +98,10 @@ bar:
                       - ramp:
                           tag: linear_volume
                           items:
-                            - string: {text: ""}
-                            - string: {text: ""}
+                            - string: {text: " "}
+                            - string: {text: " "}
                     type == "sink" && muted:
-                      - string: {text: "󰝟"}
+                      - string: {text: " 󰝟"}
               - map:
                   <<: *volume
 
@@ -98,9 +109,9 @@ bar:
         date-format: "%Y-%m-%d"
         time-format: "%T"
         content:
-          - string: {text: " {date} "}
-          - string: {text: "| "}
-          - string: {text: " {time}", right-margin: 20}
+          - string: {text: "  {date} "}
+          - string: {text: "|"}
+          - string: {text: "  {time}", right-margin: 20}
 
 
   left:
