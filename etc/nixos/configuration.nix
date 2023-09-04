@@ -63,16 +63,11 @@ in {
     # pulse.enable = true;
     # jack.enable = true;
   };
-
   environment.etc = {
     "pipewire/pipewire.conf.d/92-low-latency.conf".text = ''
-      context.properties = {
-        link.max-buffers = 16;
-        default.clock.allowed-rates = [ 192000 96000 88200 48000 44100 ]
-        default.clock.quantum = 512
-        default.clock.min-quantum = 32
-        default.clock.max-quantum = 512
-        default.clock.quantum-limit = 1024
+       context.properties = {
+         link.max-buffers = 16;
+         default.clock.allowed-rates = [ 192000 96000 88200 48000 44100 ]
       }
     '';
   };
@@ -144,7 +139,7 @@ in {
   # programs.fish.enable = true;
 
   programs.sway = {
-   # package = unstable.sway;
+    # package = unstable.sway;
     enable = true;
     wrapperFeatures.gtk = true;
     extraPackages = with pkgs; [
@@ -272,7 +267,7 @@ in {
     enableSSHSupport = true;
   };
 
-  # For VSCode (Disabled now because VSCode is being such a bitch right)
+  # For VSCode (Disabled now because VSCode is being such a bitch)
   services.gnome.gnome-keyring.enable = true;
 
   # enable libvirtd

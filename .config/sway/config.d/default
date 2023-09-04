@@ -129,10 +129,10 @@ exec swayidle -w\
     bindsym $mod+f fullscreen
 
     # Toggle the current focus between tiling and floating mode
-    bindsym $mod+Shift+space floating toggle
+    bindsym $mod+Shift+space focus mode_toggle
 
     # Swap focus between the tiling area and the floating area
-    bindsym $mod+space focus mode_toggle
+    bindsym $mod+space floating toggle
 
     # Move focus to the parent container
     bindsym $mod+a focus parent
@@ -189,8 +189,8 @@ bindsym $mod+r mode "resize"
 #
 # Player
 #
-    bindsym XF86AudioPlay exec playerctl play
-    bindsym XF86AudioPause exec playerctl pause
+    bindsym XF86AudioPlay exec mpc --host ~/.config/mpd/socket toggle
+    bindsym XF86AudioPause exec mpc --host ~/.config/mpd/socket play
     bindsym XF86AudioNext exec playerctl next
     bindsym XF86AudioPrev exec playerctl previous
 #
