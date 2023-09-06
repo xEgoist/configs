@@ -19,7 +19,6 @@
 
       supportedSystems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
 
-      # TODO: Add Toolchain logic here similar to oxalica/rust-overlay
       forEachSupportedSystem = f: nixpkgs.lib.genAttrs supportedSystems (system:
         let
           channel = fenix.packages.${system}.${toolchain};
@@ -27,16 +26,24 @@
         f rec {
           pkgs = import nixpkgs { inherit overlays system; };
 
-          rustPkg = with fenix.packages.${system}; combine [
-            latest.miri
-            targets.aarch64-unknown-linux-gnu.latest.rust-std
-            channel.cargo
-            channel.clippy
-            channel.rust-src
-            channel.rustc
-            channel.rust-analyzer
-            channel.rustfmt
-          ];
+          rustPkg = with fenix.packages.${system};
+            if builtins.pathExists ./rust-toolchain.toml then
+              fromToolchainFile
+                {
+                  file = ./rust-toolchain.toml;
+                  sha256 = pkgs.lib.fakeSha256;
+                }
+            else
+              combine [
+                latest.miri
+                targets.aarch64-unknown-linux-gnu.latest.rust-std
+                channel.cargo
+                channel.clippy
+                channel.rust-src
+                channel.rustc
+                channel.rust-analyzer
+                channel.rustfmt
+              ];
         });
     in
     {
