@@ -6,4 +6,6 @@ start up a project in any language.
 
 ## Usage
 
-Copy the corrosponding `flake.nix` file to your project then either use nix-direnv or run `nix develop`.
+```bash
+  nix flake init -t ~/templates#rs
+```

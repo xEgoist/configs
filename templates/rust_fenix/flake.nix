@@ -10,7 +10,7 @@
     let
 
       # -------KNOBS-------
-      toolchain = "latest";
+      toolchain = "stable";
       # -------     -------
 
       overlays = [
@@ -35,7 +35,7 @@
                 }
             else
               combine [
-                latest.miri
+                # latest.miri
                 targets.aarch64-unknown-linux-gnu.latest.rust-std
                 channel.cargo
                 channel.clippy
@@ -68,5 +68,10 @@
               "${cc}/bin/${cc.targetPrefix}cc";
           };
         });
+      templates.default = {
+        description = "Default template for Rust development";
+        attrPath = "devShells";
+      };
+
     };
 }

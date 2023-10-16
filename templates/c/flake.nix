@@ -1,95 +1,67 @@
 {
-  description = "A Flexible C Development Environment with LLVM16 and GCC 13";
+  description = "Flexible C Development Environments with LLVM16 and GCC 13";
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
+
   outputs = { self, nixpkgs }:
     let
-
-      # ---- MAIN SWITCHES ----
-
-      useLLVM = true;
-      useMold = true;
-      useGold = false;
-
-      # ----               ----
-
-      # mkShell = (pkgs.mkShell.override { stdenv = pkgs.pkgsCross.mingwW64.stdenv; });
-
       supportedSystems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
       forEachSupportedSystem = f: nixpkgs.lib.genAttrs supportedSystems (system: f {
         pkgs = import nixpkgs { inherit system; };
       });
+
+      createShell = commonPkgs: stdenv: name: pkgs:
+        let
+          shell = pkgs.mkShell.override { inherit stdenv; };
+        in
+        shell {
+          inherit name;
+          packages = with pkgs; commonPkgs;
+        };
+
     in
     {
       devShells = forEachSupportedSystem ({ pkgs }:
-        assert pkgs.lib.assertMsg (!(useMold && useGold))
-          "useMold and useGold cannot be enabled at the same time.";
         let
 
-          # Used for setting meson's linker environment variables (CC_LD/CXX_LD)
-          linker = (if useMold then "mold" else if useLLVM then "lld" else if useGold then "gold" else "ld");
+          commonPkgs = with pkgs; [
+            ccache
+            clang-tools_16
+            cmake
+            cmocka
+            meson
+            ninja
+            pkg-config
+            python3
+          ] ++ lib.optionals (!stdenv.isDarwin) [
+            valgrind
+            gdb
+            gf
+          ];
 
-          # Sets mkShell to the corrosponding stdenv so the compiler works correctly.
-          # If Mold/Gold is enabled, use the adapter so it it sets fuse-ld as part of the compilation.
-          mkShell =
-            if useLLVM then
-              (pkgs.mkShell.override {
-                stdenv =
-                  if useMold then
-                    pkgs.stdenvAdapters.useMoldLinker pkgs.llvmPackages_16.stdenv
-                  else if useGold then
-                    pkgs.stdenvAdapters.useGoldLinker pkgs.llvmPackages_16.stdenv
-                  else
-                    pkgs.llvmPackages_16.stdenv;
-              })
-            else
-              (pkgs.mkShell.override {
-                stdenv =
-                  if useMold then
-                    pkgs.stdenvAdapters.useMoldLinker pkgs.gcc13Stdenv
-                  else if useGold then
-                    pkgs.stdenvAdapters.useGoldLinker pkgs.gcc13Stdenv
-                  else
-                    pkgs.gcc13Stdenv;
-              })
-          ;
+          gccStdEnv = pkgs.gcc13Stdenv;
+          llvmStdEnv = pkgs.llvmPackages_16.stdenv;
+          gccMoldStdEnv = pkgs.stdenvAdapters.useMoldLinker gccStdEnv;
+          llvmMoldStdEnv = pkgs.stdenvAdapters.useMoldLinker llvmStdEnv;
+          gccGoldStdEnv = pkgs.stdenvAdapters.useGoldLinker gccStdEnv;
+          llvmGoldStdEnv = pkgs.stdenvAdapters.useGoldLinker llvmStdEnv;
+
+          moldPkgs = with pkgs; [ mold ];
+          llvmPkgs = with pkgs; [ llvmPackages_16.lldb llvmPackages_16.llvm llvmPackages_16.bintools ];
         in
+        rec
         {
-          default = mkShell {
-            name = "C Flake";
-            packages = with pkgs;
+          gcc = createShell commonPkgs gccStdEnv "C Flake with GCC13" pkgs;
+          gccMold = createShell (commonPkgs ++ moldPkgs) gccMoldStdEnv "C Flake with GCC13 and Mold" pkgs;
+          gccGold = createShell commonPkgs gccGoldStdEnv "C Flake with GCC13 and Gold" pkgs;
 
-              lib.optionals (useLLVM)
-                [
-                  llvmPackages_16.lldb
-                  llvmPackages_16.llvm
-                  llvmPackages_16.bintools
-                ]
-              ++
-              lib.optionals (useMold) [ mold ] ++
-              [
-                gdb
-                ccache
-                clang-tools_16
-                cmocka
-                cmake
-                # fmt
-                gf
-                meson
-                ninja
-                pkg-config
-                valgrind
-                # For Cross Compilation
-                # pkgsCross.mingwW64.stdenv.cc
-                # pkgsCross.mingwW64.windows.pthreads
-              ];
+          llvm = createShell (commonPkgs ++ llvmPkgs) llvmStdEnv "C Flake with LLVM 16" pkgs;
+          llvmMold = createShell (commonPkgs ++ llvmPkgs ++ moldPkgs) llvmMoldStdEnv "C Flake with LLVM 16 and Mold" pkgs;
+          llvmGold = createShell (commonPkgs ++ llvmPkgs) llvmGoldStdEnv "C Flake with LLVM 16 and Gold" pkgs;
 
-            # For meson build system
-            CC_LD = linker;
-            CXX_LD = linker;
-
-          };
+          default = gcc;
         });
     };
 }
