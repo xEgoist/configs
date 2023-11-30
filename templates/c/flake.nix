@@ -10,6 +10,7 @@
       supportedSystems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
       forEachSupportedSystem = f: nixpkgs.lib.genAttrs supportedSystems (system: f {
         pkgs = import nixpkgs { inherit system; };
+        pkgsCross = import nixpkgs { crossSystem = { config = "riscv64-none-elf"; }; inherit system; };
       });
 
       createShell = commonPkgs: stdenv: name: pkgs:
@@ -23,7 +24,7 @@
 
     in
     {
-      devShells = forEachSupportedSystem ({ pkgs }:
+      devShells = forEachSupportedSystem ({ pkgs, pkgsCross }:
         let
 
           commonPkgs = with pkgs; [
@@ -31,6 +32,8 @@
             clang-tools_16
             cmake
             cmocka
+            # dtc
+            # pkgsCross.stdenv.cc
             meson
             ninja
             pkg-config
