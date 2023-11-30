@@ -7,6 +7,9 @@ for_window [app_id="librewolf" title="^Picture-in-Picture$"] \
 for_window [ title="^Picture in picture$" ] \
     floating enable, move position 1600 2250, sticky enable
 
+for_window [app_id="org.qbittorrent.qBittorrent" title="^(?!qBittorrent).*" ] \
+    floating enable, sticky enable
+
 # set floating (nontiling) for special apps:
 for_window [class="qt5ct" instance="qt5ct"] floating enable, resize set width 60 ppt height 50 ppt
 for_window [class="Bluetooth-sendto" instance="bluetooth-sendto"] floating enable

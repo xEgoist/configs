@@ -22,7 +22,7 @@
 
       python = {
         path = ./python;
-        description = "A Python 12 Development Environment";
+        description = "A Python 3.12 Development Environment";
       };
 
       # Aliases

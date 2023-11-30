@@ -2,9 +2,11 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
-let unstable = import <unstable> { config.allowUnfree = true; };
-in {
+{ config, pkgs, unstable, ... }:
+# let unstable = import <unstable> { config.allowUnfree = true; };
+# let unstable = outputs.combPkgs.unstable;
+# in
+{
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
@@ -44,6 +46,9 @@ in {
       core = {
         editor = "hx";
       };
+      commit = {
+        verbose = true;
+      };
     };
   };
 
@@ -63,10 +68,11 @@ in {
     # pulse.enable = true;
     # jack.enable = true;
   };
+  environment.enableDebugInfo = true;
   environment.etc = {
     "pipewire/pipewire.conf.d/92-low-latency.conf".text = ''
        context.properties = {
-         link.max-buffers = 16;
+         # link.max-buffers = 16;
          default.clock.allowed-rates = [ 192000 96000 88200 48000 44100 ]
       }
     '';
@@ -114,14 +120,17 @@ in {
     packages = with pkgs; [
       # unstable.librewolf
       firefox
+      unstable.zellij
       fzf
       gpgme
       irssi
       libnotify
       mpc_cli
+      unstable.gitsign
       mpv
       ncmpc
       neomutt
+      unstable.emacs29
       unstable.thunderbird
       krita
       w3m
@@ -136,7 +145,7 @@ in {
     ];
   };
   # Enable Fish
-  # programs.fish.enable = true;
+  programs.fish.enable = true;
 
   programs.sway = {
     # package = unstable.sway;
@@ -151,7 +160,7 @@ in {
       gtk-layer-shell
       jq
       mako
-      mlterm
+      unstable.vscode
       mpd
       polkit_gnome
       screen
@@ -164,6 +173,7 @@ in {
       sysstat
       unstable.egl-wayland
       unstable.foot
+      unstable.wezterm
       unstable.imhex
       unstable.wayland-protocols
       wf-recorder
@@ -208,7 +218,7 @@ in {
     XDG_CURRENT_DESKTOP = "sway";
   };
 
-  fonts.fonts = with pkgs; [
+  fonts.packages = with pkgs; [
     (nerdfonts.override {
       fonts = [
         "IBMPlexMono"
@@ -230,7 +240,7 @@ in {
     };
   };
 
-  qt.platformTheme = "qt5ct";
+  qt.platformTheme = "adwaita-dark";
   programs.steam = {
     enable = true;
     remotePlay.openFirewall =
@@ -253,8 +263,7 @@ in {
     man-pages-posix
     nix-direnv
     nix-index
-    helix
-    unstable.vscodium
+    unstable.helix
     virt-manager
   ];
 
@@ -280,9 +289,9 @@ in {
   # Open ports in the firewall.
 
   #  networking.firewall.allowedTCPPorts = [ ];
-  # networking.firewall.interfaces."virbr0".allowedTCPPorts = [
-  #   8000
-  # ];
+  networking.firewall.interfaces."virbr1".allowedTCPPorts = [
+    42069
+  ];
 
   # In case I decide I need to bride my adapter for VMs (bad idea currently)
   # networking = {

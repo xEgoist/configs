@@ -1,8 +1,9 @@
 theme = "amberwood"
 [editor]
   rulers = [100]
-  auto-pairs = false
   text-width = 100
+  auto-pairs = false
+
 [editor.cursor-shape]
   insert = "bar"
 
@@ -22,3 +23,5 @@ theme = "amberwood"
 [editor.indent-guides]
   render = true
 
+[editor.file-picker]
+  hidden = false

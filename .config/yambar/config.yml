@@ -51,17 +51,17 @@ bar:
 
 
   right:
-    # - script:
-    #     path: /home/egoist/Projects/c_projects/matcha/build/matcha
-    #     args: [ '-d', '--bar=yambar', '--off']
-    #     content:
-    #         - map:
-    #             on-click:
-    #               left: /home/egoist/Projects/c_projects/matcha/build/matcha --toggle
-    #             conditions:
-    #               inhibit: { string: { text: " " , right-margin: 5} }
-    #               ~inhibit: { string: { text: "󰒲 ", right-margin: 5, foreground: ffffff66 } }
-    #         - string: { text: "|", right-margin: 5}
+    - script:
+        path: /home/egoist/Projects/c_projects/matcha/build/matcha
+        args: [ '-d', '--bar=yambar', '--off']
+        content:
+            - map:
+                on-click:
+                  left: /home/egoist/Projects/c_projects/matcha/build/matcha --toggle
+                conditions:
+                  inhibit: { string: { text: " " , right-margin: 5} }
+                  ~inhibit: { string: { text: "󰒲 ", right-margin: 5, foreground: ffffff66 } }
+            - string: { text: "|", right-margin: 5}
     - network:
         name: enp4s0
         content:
@@ -124,7 +124,7 @@ bar:
              id == -1 && cpu > 80: { string: {text: "  {cpu}%", left-margin: 10, foreground: ff0000ff} }
 
     - mem:
-        interval: 2500
+        poll-interval: 2500
         content:
           map:
             conditions:
