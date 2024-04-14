@@ -116,6 +116,7 @@ exec swayidle -w\
     # respectively.
     bindsym $mod+b splith
     bindsym $mod+v splitv
+    bindsym $mod+z split none
 
     # Switch the current container between different layout styles
     bindsym $mod+s layout stacking
@@ -161,10 +162,10 @@ mode "resize" {
     bindsym $down resize grow height 50 px
 
     # Ditto, with arrow keys
-    bindsym Left resize shrink width 4 ppt
-    bindsym Right resize grow width 4 ppt
-    bindsym Up resize shrink height 4 ppt
-    bindsym Down resize grow height 4 ppt
+    bindsym Left resize shrink width 12 px
+    bindsym Right resize grow width 12 px
+    bindsym Up resize shrink height 12 px
+    bindsym Down resize grow height 12 px
 
     # Return to default mode
     bindsym Return mode "default"
@@ -199,7 +200,10 @@ bindsym $mod+r mode "resize"
 #
 # App shortcuts
 #
-    bindsym $mod+o exec firefox --name firefox
+
+# bindsym $mod+o exec firefox --name firefox
+bindsym $mod+o exec mullvad-browser --name mullvad_browser
+
 #
 # Screenshots
 #

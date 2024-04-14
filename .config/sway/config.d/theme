@@ -1,24 +1,29 @@
 # Apply gtk theming
-exec_always ~/.config/sway/scripts/import-gsettings
-focus_follows_mouse always
+exec_always "dconf write /org/gnome/desktop/interface/cursor-size 32"
+exec_always "dconf write /org/gnome/desktop/interface/cursor-theme Adwaita"
+
+focus_follows_mouse no
 
 # Set inner/outer gaps
-# gaps inner 2
-# gaps outer 2
+gaps inner 0
+gaps outer 0
 
-default_border pixel 2
+default_border normal 0
 
 # Default Font
-# font pango:Noto Sans Regular 10
+font pango:Noto Sans Regular 2
 
 # Thin borders:
-smart_borders no_gaps
+smart_borders on
+# smart_gaps on
 
 # Title format for windows
-for_window [shell="xdg_shell"] title_format "%title (%app_id)"
-for_window [shell="x_wayland"] title_format "%class - %title"
+# for_window [shell="xdg_shell"] title_format "<b>%title</b> (%app_id)"
+# for_window [shell="x_wayland"] title_format "%class %title"
+for_window [shell="xdg_shell"] title_format " "
+for_window [shell="x_wayland"] title_format " "
 
-seat seat0 xcursor_theme "Adwaita" 24
+seat seat0 xcursor_theme "Adwaita" 32
 
 titlebar_border_thickness   0
 # class                 border  bground text    indicator child_border

@@ -1,5 +1,14 @@
 # Assign workspaces
 
+
+# for_window [ title="^Steam$" ] floating enable 
+for_window [ class="^steam*" ] floating enable 
+
+for_window [ title="^Extension:*" ] \
+ floating enable, resize set width 800, move position cursor
+
+for_window [ class="^steam_app_*" ] floating enable 
+
 for_window [app_id="firefox" title="^Picture-in-Picture$"] \
     floating enable, move position 1600 2250, sticky enable
 for_window [app_id="librewolf" title="^Picture-in-Picture$"] \
@@ -9,6 +18,9 @@ for_window [ title="^Picture in picture$" ] \
 
 for_window [app_id="org.qbittorrent.qBittorrent" title="^(?!qBittorrent).*" ] \
     floating enable, sticky enable
+
+# for_window [ title="Extension.*Bitwarden.*" ] \
+#     floating enable, sticky enable
 
 # set floating (nontiling) for special apps:
 for_window [class="qt5ct" instance="qt5ct"] floating enable, resize set width 60 ppt height 50 ppt
