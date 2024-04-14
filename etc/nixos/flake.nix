@@ -10,28 +10,39 @@
     };
   };
 
-  outputs = { self, nixpkgs, ... } @ inputs:
+  outputs = { self, nixpkgs, unstable, ... } @ inputs:
     let
-      # inherit (self) outputs;
-      mkPkgs = name:
+      mkPkgs = name: system:
         let
           input = inputs.${name};
         in
         import input {
-          system = "x86_64-linux";
+          inherit system;
           config.allowUnfree = true;
         };
 
-      combPkgs = builtins.foldl' (acc: name: acc // { ${name} = mkPkgs name; }) { } (builtins.attrNames inputs);
+      combPkgs = system: builtins.foldl' (acc: name: acc // { ${name} = mkPkgs name system; }) { } (builtins.attrNames inputs);
     in
     {
       nixosConfigurations = {
         Egoist = nixpkgs.lib.nixosSystem {
           specialArgs = {
             inherit inputs;
-          } // combPkgs;
+            defaultUser = "egoist";
+          } // combPkgs "x86_64-linux";
           modules = [
-            ./configuration.nix
+            ./modules/common.nix
+            ./hosts/egoist/configuration.nix
+          ];
+        };
+        cassini = nixpkgs.lib.nixosSystem {
+          specialArgs = {
+            inherit inputs;
+            defaultUser = "cassini";
+          } // combPkgs "x86_64-linux";
+          modules = [
+            ./modules/common.nix
+            ./hosts/cassini/configuration.nix
           ];
         };
       };

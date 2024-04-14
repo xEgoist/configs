@@ -14,7 +14,6 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.supportedFilesystems = [ "ntfs" ];
-  boot.tmp.useTmpfs = true;
 
   networking.hostName = "Egoist"; # Define your hostname.
 
@@ -24,34 +23,9 @@
   '';
 
   # We use dhcpcd here. no network manager BS.
-  networking.dhcpcd.enable = true;
   # networking.dhcpcd.extraConfig = "nohook resolv.conf";
-  services.resolved.enable = false;
   nixpkgs.config.allowUnfree = true;
   boot.initrd.kernelModules = [ "amdgpu" ];
-
-  # Set your time zone.
-  time.timeZone = "US/Central";
-
-
-  # Enable Git and config it
-  programs.git = {
-    enable = true;
-    config = {
-      init = {
-        defaultBranch = "main";
-      };
-      merge = {
-        conflictStyle = "zdiff3";
-      };
-      core = {
-        editor = "hx";
-      };
-      commit = {
-        verbose = true;
-      };
-    };
-  };
 
   security.rtkit.enable = true;
   services.pipewire = {
@@ -92,31 +66,11 @@
   hardware.opengl.driSupport32Bit = true;
 
   # Turn on nix flakes (TODO: Remove once it's no longer experimental)
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  nix.settings = {
-    keep-outputs = true;
-    keep-derivations = true;
-  };
   environment.pathsToLink = [ "/share/nix-direnv" ];
 
   environment.variables.EDITOR = "hx";
 
-  nix.settings.auto-optimise-store = true;
-  nix = {
-    gc = {
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 7d";
-    };
-  };
   # Fucking sudo man
-  security.doas.enable = true;
-  security.sudo.enable = false;
-  security.doas.extraRules = [{
-    users = [ "egoist" ];
-    keepEnv = true;
-    persist = true;
-  }];
   users.users.egoist =
     # Disgusting but whatever.
     let
@@ -164,7 +118,7 @@
         streamlink
         streamlink-twitch-gui-bin
         tealdeer
-        unstable.jujutsu
+        # unstable.jujutsu
         unstable.zellij
         unzip
         urlscan
@@ -172,8 +126,6 @@
         xdg-utils
       ];
     };
-  # Enable Fish
-  programs.fish.enable = true;
 
   programs.sway = {
     # package = unstable.sway;
