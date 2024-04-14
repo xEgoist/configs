@@ -1,8 +1,9 @@
 theme = "amberwood"
 [editor]
-  rulers = [100]
-  text-width = 100
+  rulers = [120]
+  text-width = 120
   auto-pairs = false
+  bufferline = "multiple"
 
 [editor.cursor-shape]
   insert = "bar"
@@ -14,10 +15,7 @@ theme = "amberwood"
 [editor.soft-wrap]
   enable = true
   wrap-at-text-width = true
-
-
-[keys.normal]
-  "X" = [ "extend_line_up", "extend_to_line_bounds" ]
+  wrap-indicator = "⭸"
 
 
 [editor.indent-guides]
@@ -25,3 +23,6 @@ theme = "amberwood"
 
 [editor.file-picker]
   hidden = false
+
+[editor.smart-tab]
+  enable = false

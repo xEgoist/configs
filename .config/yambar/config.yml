@@ -1,10 +1,13 @@
 ---
 
 bar:
-  height: 48
+  # Increase/decrease this value until the minibuffer in vim/hx/nvim have no padding. ( I just dislike it)
+  height: 30 # Next Value: 77
   location: top
   background: 3E3F67ff
-  font: Ubuntu Nerd Font:pixelsize=16
+  font: Ubuntu Nerd Font:pixelsize=28
+  spacing: 5
+  right-margin: 25
   center:
     - mpd:
         host: /home/egoist/.config/mpd/socket
@@ -42,7 +45,6 @@ bar:
 
         content:
           map:
-            margin: 10
             conditions:
               state == offline: {string: {text: offline, foreground: ff0000ff}}
               state == stopped: {string: {text: stopped}}
@@ -52,38 +54,38 @@ bar:
 
   right:
     - script:
-        path: /home/egoist/Projects/c_projects/matcha/build/matcha
-        args: [ '-d', '--bar=yambar', '--off']
-        content:
+        path: /etc/profiles/per-user/egoist/bin/matcha
+        args: [ '-d', '-o', '--bar=yambar']
+        content: 
             - map:
                 on-click:
-                  left: /home/egoist/Projects/c_projects/matcha/build/matcha --toggle
+                  left: /etc/profiles/per-user/egoist/bin/matcha --toggle
                 conditions:
-                  inhibit: { string: { text: " " , right-margin: 5} }
-                  ~inhibit: { string: { text: "󰒲 ", right-margin: 5, foreground: ffffff66 } }
-            - string: { text: "|", right-margin: 5}
+                  inhibit: { string: { text: " " , } } 
+                  ~inhibit: { string: { text: "󰒲 ", foreground: ffffff66 } } 
+    - label:
+        content: { string: { text: "|" } }
     - network:
         name: enp4s0
         content:
             - map:
                 conditions:
-                  state == up: {string: {text: "🌐{name}: {ipv4}", right-margin: 5} }
-                  state == down: {string: {text: "🌐{name}: {ipv4}", foreground: ffffff66, right-margin: 5 } }
-                  state == "not present": {string: {text: "🌐 NOT PRESENT", foreground: ffffff66, right-margin: 5 }}
-                  state == unknown: {string: {text: "🌐{name}: {ipv4}", foreground: ffffff66, right-margin: 5 }}
-            - string: { text: "|", right-margin: 5 }
-
+                  state == up: {string: {text: "🌐{name}: {ipv4}" } }
+                  state == down: {string: {text: "🌐{name}: {ipv4}", foreground: ffffff66 } }
+                  state == "not present": {string: {text: "🌐 NOT PRESENT", foreground: ffffff66 }}
+                  state == unknown: {string: {text: "🌐{name}: {ipv4}", foreground: ffffff66 }}
+            
+    - label:
+        content: { string: { text: "|" } }
     - pipewire:
         anchors:
           volume: &volume
             conditions:
               type == "source": { empty: {} }
-              muted:
-                - string: {text: "{linear_volume}%", foreground: ff0000ff, right-margin: 5 }
-                - string: { text: "|", right-margin: 5 }
+              muted: 
+                - string: {text: "{linear_volume}%", foreground: ff0000ff }
               ~muted:
-                - string: {text: "{linear_volume}%" , right-margin: 5}
-                - string: { text: "|", right-margin: 5 }
+                - string: {text: "{linear_volume}%"  }
         content:
           list:
             on-click:
@@ -105,28 +107,42 @@ bar:
               - map:
                   <<: *volume
 
+    - label:
+        content: { string: { text: "|" } }
     - clock:
         date-format: "%Y-%m-%d"
         time-format: "%T"
         content:
           - string: {text: "  {date} "}
           - string: {text: "|"}
-          - string: {text: "  {time}", right-margin: 20}
+          - string: {text: "  {time}" }
 
 
   left:
+    # https://codeberg.org/dnkl/yambar/issues/300
+    # - i3:
+    #     content:
+    #       "":
+    #         map:
+    #           default: { string: { text: "{name}", margin: 5 } }
+    #           conditions:
+    #             state == focused: { string: { text: "{name}", margin: 5, foreground: ff0000ff } }
+    # - label:
+    #     content: { string: { text: "|" } }
     - cpu:
         poll-interval: 2500
         content:
           map:
             conditions:
-             id == -1 && cpu <= 80: { string: {text: "  {cpu}%", left-margin: 10 } }
-             id == -1 && cpu > 80: { string: {text: "  {cpu}%", left-margin: 10, foreground: ff0000ff} }
+             id == -1 && cpu <= 80: { string: {text: "  {cpu}%" } }
+             id == -1 && cpu > 80: { string: {text: "  {cpu}%", foreground: ff0000ff} }
 
+    - label:
+        content: { string: { text: "|" } }
     - mem:
         poll-interval: 2500
         content:
           map:
             conditions:
-              percent_used <= 80: { string: {text: "  {used:mb}MB", left-margin: 10 } }
-              percent_used > 80: { string: {text: "  {used:mb}MB", left-margin: 10, foreground: ff0000ff} }
+              percent_used <= 80: { string: {text: "  {used:mb}MB" } }
+              percent_used > 80: { string: {text: "  {used:mb}MB", foreground: ff0000ff} }

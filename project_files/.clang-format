@@ -1,0 +1,18 @@
+BasedOnStyle: GNU
+IndentWidth: 4
+UseTab: Never
+IndentCaseLabels: true
+TabWidth: 4
+ColumnLimit: 120
+PointerAlignment: Right
+SeparateDefinitionBlocks: Always
+AlwaysBreakAfterReturnType: All
+BreakAfterAttributes: Always
+BreakBeforeBraces: Custom
+SpaceBeforeParens: ControlStatements
+BraceWrapping:
+  AfterEnum: false
+  AfterClass: false
+  SplitEmptyFunction: true
+  AfterFunction: true
+  AfterStruct: false

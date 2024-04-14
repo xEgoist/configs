@@ -1,5 +1,5 @@
 function trim -d "Trims trailing whitespaces"
-    if test (count $argv) -eq 0
+    if test (count $argv) -eq 0 ; or test "$argv[1]" = "-h"
         # Usage
         echo "Usage: trim [-c|--check] [FILE ...]"
         return -1
