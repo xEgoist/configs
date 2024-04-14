@@ -2,7 +2,7 @@
   description = "A Nix Dev Env for Python3";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   };
 
   outputs = { self, nixpkgs }:
@@ -13,14 +13,19 @@
       });
     in
     {
+      formatter = forEachSupportedSystem ({ pkgs }: pkgs.nixpkgs-fmt);
       devShells = forEachSupportedSystem ({ pkgs }: {
         default = pkgs.mkShell {
 
           packages = with pkgs; [
-            python312
-            virtualenv
+            (python3.withPackages (python-pkgs: [
+              python-pkgs.python-lsp-black
+              python-pkgs.python-lsp-server
+              python-pkgs.python-lsp-ruff
+            ]))
+          ] ++
+          [
           ];
-
         };
       });
     };

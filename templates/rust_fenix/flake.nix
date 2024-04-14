@@ -2,7 +2,7 @@
   description = "Rust Development Environment";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     fenix.url = "github:nix-community/fenix";
   };
 
@@ -36,7 +36,6 @@
             else
               combine [
                 # latest.miri
-                targets.aarch64-unknown-linux-gnu.latest.rust-std
                 channel.cargo
                 channel.clippy
                 channel.rust-src
@@ -61,17 +60,27 @@
               # LLDB 15 and 16 are shitting the bed currently
               lldb_14
             ];
-            CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER =
-              let
-                inherit (pkgs.pkgsCross.aarch64-multiplatform.stdenv) cc;
-              in
-              "${cc}/bin/${cc.targetPrefix}cc";
+          };
+          cross = pkgs.mkShell {
+            packages = with pkgs; [
+              rustPkg
+              cargo-watch
+              cargo-show-asm
+              cargo-edit
+              cargo-nextest
+              pkg-config
+              zlib
+              # LLDB 15 and 16 are shitting the bed currently
+              lldb_14
+            ];
+            # For cross compilation, although it's better to use rust-toolchain.toml instead for devshells.
+            # ++ [ targets.aarch64-unknown-linux-gnu.latest.rust-std ];
+            # CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER =
+            #   let
+            #     inherit (pkgs.pkgsCross.aarch64-multiplatform.stdenv) cc;
+            #   in
+            #   "${cc}/bin/${cc.targetPrefix}cc";
           };
         });
-      templates.default = {
-        description = "Default template for Rust development";
-        attrPath = "devShells";
-      };
-
     };
 }

@@ -4,6 +4,10 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
     unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    matcha = {
+      url = "git+https://codeberg.org/QuincePie/matcha";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, nixpkgs, ... } @ inputs:
@@ -24,7 +28,7 @@
       nixosConfigurations = {
         Egoist = nixpkgs.lib.nixosSystem {
           specialArgs = {
-            inherit inputs; # inherit combPkgs will cause combPkgs to be used as combPkgs.hello
+            inherit inputs;
           } // combPkgs;
           modules = [
             ./configuration.nix

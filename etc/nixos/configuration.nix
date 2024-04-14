@@ -2,10 +2,8 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, unstable, ... }:
-# let unstable = import <unstable> { config.allowUnfree = true; };
-# let unstable = outputs.combPkgs.unstable;
-# in
+{ inputs, config, pkgs, unstable, ... }:
+
 {
   imports = [
     # Include the results of the hardware scan.
@@ -20,8 +18,11 @@
 
   networking.hostName = "Egoist"; # Define your hostname.
 
-  # networking.nameservers = [ "1.1.1.1" ];
-  networking.extraHosts = "";
+  networking.nameservers = [ "1.1.1.1" ];
+
+  networking.extraHosts = ''
+  '';
+
   # We use dhcpcd here. no network manager BS.
   networking.dhcpcd.enable = true;
   # networking.dhcpcd.extraConfig = "nohook resolv.conf";
@@ -55,6 +56,7 @@
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
+    # systemWide = true;
     alsa.enable = true;
     alsa.support32Bit = true;
     wireplumber.enable = true;
@@ -65,15 +67,17 @@
     # https://wiki.archlinux.org/title/Firefox/Tweaks#Disable_WebRTC_audio_post_processing
     # Otherwise if nothing works, pulse may be enabled here.
 
-    # pulse.enable = true;
+    # 2023-12-27: Baldur's Gate 3 Seems to want pulse :(
+    pulse.enable = true;
     # jack.enable = true;
   };
   environment.enableDebugInfo = true;
   environment.etc = {
     "pipewire/pipewire.conf.d/92-low-latency.conf".text = ''
        context.properties = {
-         # link.max-buffers = 16;
-         default.clock.allowed-rates = [ 192000 96000 88200 48000 44100 ]
+         # link.max-buffers = 16
+         default.clock.rate = 384000
+         # default.clock.allowed-rates = [ 384000 ]
       }
     '';
   };
@@ -113,37 +117,61 @@
     keepEnv = true;
     persist = true;
   }];
-  users.users.egoist = {
-    shell = unstable.fish;
-    isNormalUser = true;
-    extraGroups = [ "wheel" "libvirtd" ]; # Enable ‘sudo’ for the user.
-    packages = with pkgs; [
-      # unstable.librewolf
-      firefox
-      unstable.zellij
-      fzf
-      gpgme
-      irssi
-      libnotify
-      mpc_cli
-      unstable.gitsign
-      mpv
-      ncmpc
-      neomutt
-      unstable.emacs29
-      unstable.thunderbird
-      krita
-      w3m
-      nomacs
-      obs-studio
-      qbittorrent
-      tealdeer
-      brave
-      unzip
-      urlscan
-      xdg-utils
-    ];
-  };
+  users.users.egoist =
+    # Disgusting but whatever.
+    let
+      mullvadPolicies = pkgs.writeText "policies.json" (builtins.toJSON {
+        policies.DisableAppUpdate = true;
+        policies.Extensions.Install = [
+          "https://addons.mozilla.org/firefox/downloads/file/4246600/bitwarden_password_manager-latest.xpi"
+          "https://addons.mozilla.org/firefox/downloads/file/4173642/kagi_search_for_firefox-latest.xpi"
+        ];
+      });
+      customMullvadBrowser = (pkgs.mullvad-browser.override {
+        # Since HiDPI sucks ass in xwayland, we got to do it per application instead.
+        extraPrefs = ''
+          pref("layout.css.devPixelsPerPx", "2.0");
+          pref("browser.tabs.inTitlebar", 0);
+        '';
+      }).overrideAttrs (oldAttrs: {
+        postInstall = ''
+          ${oldAttrs.postInstall or ""}
+          install -Dvm644 ${mullvadPolicies} $out/share/mullvad-browser/distribution/policies.json
+        '';
+      });
+    in
+    {
+      shell = unstable.fish;
+      isNormalUser = true;
+      extraGroups = [ "wheel" "libvirtd" ]; # Enable ‘sudo’ for the user.
+      packages = with pkgs; [
+        brave
+        emacs29
+        firefox
+        fzf
+        gpgme
+        inputs.matcha.packages.${system}.default
+        irssi
+        krita
+        libnotify
+        mpc_cli
+        mpv
+        customMullvadBrowser
+        ncmpc
+        neomutt
+        obs-studio
+        qbittorrent
+        streamlink
+        streamlink-twitch-gui-bin
+        tealdeer
+        unstable.jujutsu
+        unstable.zellij
+        unzip
+        urlscan
+        w3m
+        xdg-utils
+      ];
+    };
   # Enable Fish
   programs.fish.enable = true;
 
@@ -160,21 +188,20 @@
       gtk-layer-shell
       jq
       mako
-      unstable.vscode
       mpd
       polkit_gnome
       screen
       slurp
-      sway-contrib.grimshot
       swaybg
+      sway-contrib.grimshot
       swayidle
       swayimg
       swaylock
       sysstat
       unstable.egl-wayland
       unstable.foot
-      unstable.wezterm
       unstable.imhex
+      unstable.vscode
       unstable.wayland-protocols
       wf-recorder
       wget
@@ -196,6 +223,7 @@
   };
 
   environment.sessionVariables = rec {
+    STEAM_FORCE_DESKTOPUI_SCALING = "2.0";
     EDITOR = "hx";
     ## mozilla
     MOZ_ENABLE_WAYLAND = "1";
@@ -249,7 +277,6 @@
       true; # Open ports in the firewall for Source Dedicated Server
   };
 
-  # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
   # system wide installed packages:
@@ -264,6 +291,7 @@
     nix-direnv
     nix-index
     unstable.helix
+    sshfs
     virt-manager
   ];
 
@@ -290,6 +318,9 @@
 
   #  networking.firewall.allowedTCPPorts = [ ];
   networking.firewall.interfaces."virbr1".allowedTCPPorts = [
+    42069
+  ];
+  networking.firewall.interfaces."tun0".allowedTCPPorts = [
     42069
   ];
 
@@ -325,6 +356,12 @@
   #      ];
   #    };
   #  };
+
+
+  services.openvpn.servers = {
+    htb = { config = '' config /home/egoist/Downloads/lab_xEgoist.ovpn ''; autoStart = false; };
+
+  };
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
