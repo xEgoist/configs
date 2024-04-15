@@ -31,7 +31,7 @@
               fromToolchainFile
                 {
                   file = ./rust-toolchain.toml;
-                  sha256 = pkgs.lib.fakeSha256;
+                  sha256 = "";
                 }
             else
               combine [
