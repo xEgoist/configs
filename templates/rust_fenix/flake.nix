@@ -72,14 +72,12 @@
               zlib
               # LLDB 15 and 16 are shitting the bed currently
               lldb_14
-            ];
-            # For cross compilation, although it's better to use rust-toolchain.toml instead for devshells.
-            # ++ [ targets.aarch64-unknown-linux-gnu.latest.rust-std ];
-            # CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER =
-            #   let
-            #     inherit (pkgs.pkgsCross.aarch64-multiplatform.stdenv) cc;
-            #   in
-            #   "${cc}/bin/${cc.targetPrefix}cc";
+            ] ++ [ targets.aarch64-unknown-linux-gnu.latest.rust-std ];
+            CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER =
+              let
+                inherit (pkgs.pkgsCross.aarch64-multiplatform.stdenv) cc;
+              in
+              "${cc}/bin/${cc.targetPrefix}cc";
           };
         });
     };
