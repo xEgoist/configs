@@ -47,6 +47,10 @@
     };
   };
   environment.systemPackages = with pkgs; [
+    # Enable General Man Pages
+    man-pages
+    man-pages-posix
+    nix-index
     unstable.helix
   ];
   environment.variables.EDITOR = "hx";

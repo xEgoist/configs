@@ -237,12 +237,7 @@
     # Android Device Support (Helpful for mount)
     android-udev-rules
     direnv
-    # Enable General Man Pages
-    man-pages
-    man-pages-posix
     nix-direnv
-    nix-index
-    unstable.helix
     sshfs
     virt-manager
   ];
