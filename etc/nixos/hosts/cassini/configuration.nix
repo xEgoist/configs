@@ -15,14 +15,32 @@
 
   networking.hostName = "cassini";
 
-  environment.enableDebugInfo = true;
+  # environment.enableDebugInfo = true;
 
   services.openssh = {
     enable = true;
     settings.PasswordAuthentication = false;
   };
 
-
+  services.nginx = {
+    enable = true;
+    recommendedTlsSettings = true;
+    recommendedProxySettings = true;
+    recommendedOptimisation = true;
+    recommendedGzipSettings = true;
+    recommendedZstdSettings = true;
+    virtualHosts."yt.cassini.internal" = {
+      enableACME = false;
+      forceSSL = true;
+      sslCertificate = ./certs/yt.cassini.internal.crt;
+      sslCertificateKey = ./certs/yt.cassini.internal.key;
+    };
+  };
+  services.invidious = {
+    enable = true;
+    domain = "yt.cassini.internal";
+    nginx.enable = true;
+  };
   
   users.users.cassini = {
     isNormalUser = true;
@@ -67,8 +85,8 @@
 
 
   # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [ 22 ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
+  networking.firewall.allowedTCPPorts = [ 22 80 443];
+  networking.firewall.allowedUDPPorts = [ 22 80 443 ];
   # Or disable the firewall altogether.
   networking.firewall.enable = true;
 
