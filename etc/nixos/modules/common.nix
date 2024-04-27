@@ -15,6 +15,7 @@
     };
   };
 
+  security.pki.certificates = [ (builtins.readFile ./intermRoot.crt) ];
   security.doas.enable = true;
   security.doas.extraRules = [{
     users = [ defaultUser ];

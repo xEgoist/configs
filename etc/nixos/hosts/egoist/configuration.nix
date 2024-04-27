@@ -17,7 +17,7 @@
 
   networking.hostName = "Egoist"; # Define your hostname.
 
-  networking.nameservers = [ "1.1.1.1" ];
+  # networking.nameservers = [ "1.1.1.1" ];
 
   networking.extraHosts = ''
   '';
@@ -26,6 +26,12 @@
   # networking.dhcpcd.extraConfig = "nohook resolv.conf";
   nixpkgs.config.allowUnfree = true;
   boot.initrd.kernelModules = [ "amdgpu" ];
+  # networking.interfaces.enp4s0.ipv4.addresses = [
+  #   {
+  #     address = "192.168.88.2";
+  #     prefixLength = 24;
+  #   }
+  # ];
 
   security.rtkit.enable = true;
   services.pipewire = {
@@ -100,6 +106,7 @@
       extraGroups = [ "wheel" "libvirtd" ]; # Enable ‘sudo’ for the user.
       packages = with pkgs; [
         brave
+        customMullvadBrowser
         emacs29
         firefox
         fzf
@@ -110,7 +117,6 @@
         libnotify
         mpc_cli
         mpv
-        customMullvadBrowser
         ncmpc
         neomutt
         obs-studio
@@ -118,7 +124,7 @@
         streamlink
         streamlink-twitch-gui-bin
         tealdeer
-        # unstable.jujutsu
+        unstable.jujutsu
         unstable.zellij
         unzip
         urlscan
@@ -150,7 +156,7 @@
       swayimg
       swaylock
       sysstat
-      unstable.egl-wayland
+      # unstable.egl-wayland
       unstable.foot
       unstable.imhex
       unstable.vscode
@@ -185,17 +191,14 @@
     ## qt
     QT_QPA_PLATFORM = "wayland";
     QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
-    ## efl
-    ECORE_EVAS_ENGINE = "wayland_egl";
-    ELM_ENGINE = "wayland_egl";
     ## sdl No longer needed (Will cause steam to fail)
     # SDL_VIDEODRIVER = "wayland";
     ## java is bad
     _JAVA_AWT_WM_NONREPARENTING = "1";
     ## xdg session
-    XDG_SESSION_TYPE = "wayland";
-    XDG_SESSION_DESKTOP = "sway";
-    XDG_CURRENT_DESKTOP = "sway";
+    # XDG_SESSION_TYPE = "wayland";
+    # XDG_SESSION_DESKTOP = "sway";
+    # XDG_CURRENT_DESKTOP = "sway";
   };
 
   fonts.packages = with pkgs; [

@@ -24,6 +24,7 @@
       combPkgs = system: builtins.foldl' (acc: name: acc // { ${name} = mkPkgs name system; }) { } (builtins.attrNames inputs);
     in
     {
+      formatter = (mkPkgs "nixpkgs" "x86_64-linux").nixpkgs-fmt;
       nixosConfigurations = {
         Egoist = nixpkgs.lib.nixosSystem {
           specialArgs = {
