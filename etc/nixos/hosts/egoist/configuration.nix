@@ -197,8 +197,8 @@
     _JAVA_AWT_WM_NONREPARENTING = "1";
     ## xdg session
     # XDG_SESSION_TYPE = "wayland";
-    # XDG_SESSION_DESKTOP = "sway";
-    # XDG_CURRENT_DESKTOP = "sway";
+    XDG_SESSION_DESKTOP = "sway";
+    XDG_CURRENT_DESKTOP = "sway";
   };
 
   fonts.packages = with pkgs; [
@@ -243,6 +243,7 @@
     nix-direnv
     sshfs
     virt-manager
+    virtiofsd
   ];
 
   # yubikey to enable ssh key
