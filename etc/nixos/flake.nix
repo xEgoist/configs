@@ -2,7 +2,7 @@
   description = "Flake System Configuration for x86_64-linux";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
     unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     matcha = {
       url = "git+https://codeberg.org/QuincePie/matcha";

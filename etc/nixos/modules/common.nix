@@ -24,7 +24,7 @@
   }];
   security.sudo.enable = false;
 
-  boot.tmp.useTmpfs = true;
+  boot.tmp.cleanOnBoot = true;
   networking.dhcpcd.enable = true;
   services.resolved.enable = false;
   time.timeZone = "US/Central";

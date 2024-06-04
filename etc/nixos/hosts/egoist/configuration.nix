@@ -26,12 +26,52 @@
   # networking.dhcpcd.extraConfig = "nohook resolv.conf";
   nixpkgs.config.allowUnfree = true;
   boot.initrd.kernelModules = [ "amdgpu" ];
+
+  # # SWITCH
   # networking.interfaces.enp4s0.ipv4.addresses = [
   #   {
   #     address = "192.168.88.2";
   #     prefixLength = 24;
   #   }
   # ];
+
+  services.stunnel.enable = true;
+  services.stunnel.clients = {
+    nfs = {
+      connect = "10.0.1.3:20490";
+      accept = "127.0.0.1:2049";
+      cert = "/etc/nixos/hosts/egoist/certs/titan.internal.crt"; 
+      key = "/etc/nixos/hosts/egoist/certs/titan.internal.key";
+      CAfile = "/etc/ssl/certs/ca-bundle.crt";
+    };
+  };
+
+
+  # fileSystems."/mnt/music" = {
+  #   device = "10.0.1.3:/export/music";
+  #   fsType = "nfs";
+  #   # options = [ "rw" "sync" "hard" "noatime" "intr" "rsize=8192" "wsize=8192" ];
+  #   options = [ "noatime" "nfsvers=4.2" "rsize=1048576" "wsize=1048576" "intr" ];
+  # };
+  fileSystems."/mnt/music" = {
+    device = "127.0.0.1:/music";
+    fsType = "nfs";
+    options = [ "noatime" "nfsvers=4.2" "rsize=1048576" "wsize=1048576" "intr" ];
+    # options = [ "noauto" "proto=tcp" "nfsvers=4.2" ];
+  };
+
+  # fileSystems."/mnt/torrent" = {
+  #   device = "10.0.1.3:/export/torrent";
+  #   fsType = "nfs";
+  #   # options = [ "rw" "sync" "hard" "noatime" "intr" "rsize=8192" "wsize=8192" ];
+  #   options = [ "rw" "noatime" "nfsvers=4.2" "rsize=1048576" "wsize=1048576" "intr" ];
+  # };
+
+  fileSystems."/mnt/torrent" = {
+    device = "127.0.0.1:/torrent";
+    fsType = "nfs";
+    options = [ "rw" "noatime" "nfsvers=4.2" "rsize=1048576" "wsize=1048576" "intr" ];
+  };
 
   security.rtkit.enable = true;
   services.pipewire = {
@@ -52,14 +92,18 @@
     # jack.enable = true;
   };
   environment.enableDebugInfo = true;
-  environment.etc = {
-    "pipewire/pipewire.conf.d/92-low-latency.conf".text = ''
-       context.properties = {
-         # link.max-buffers = 16
-         default.clock.rate = 384000
-         # default.clock.allowed-rates = [ 384000 ]
-      }
-    '';
+  services.pipewire.extraConfig.pipewire = {
+    "low-latency-clock" = {
+      context.properties = {
+        default.clock.rate = 384000;
+        default.clock.allowed-rates = [ 384000 ];
+        # Low Latency (If buggy, comment out)
+        default.clock.quantum = 32;
+        default.clock.min-quantum = 32;
+        default.clock.max-quantum = 32;
+        # "link.max-buffers" = 16;
+      };
+    };
   };
 
   hardware.opengl.extraPackages = with pkgs; [
@@ -90,7 +134,6 @@
       customMullvadBrowser = (pkgs.mullvad-browser.override {
         # Since HiDPI sucks ass in xwayland, we got to do it per application instead.
         extraPrefs = ''
-          pref("layout.css.devPixelsPerPx", "2.0");
           pref("browser.tabs.inTitlebar", 0);
         '';
       }).overrideAttrs (oldAttrs: {
@@ -103,7 +146,7 @@
     {
       shell = unstable.fish;
       isNormalUser = true;
-      extraGroups = [ "wheel" "libvirtd" ]; # Enable ‘sudo’ for the user.
+      extraGroups = [ "wheel" "libvirtd"  "docker"];
       packages = with pkgs; [
         brave
         customMullvadBrowser
@@ -134,7 +177,6 @@
     };
 
   programs.sway = {
-    # package = unstable.sway;
     enable = true;
     wrapperFeatures.gtk = true;
     extraPackages = with pkgs; [
@@ -164,8 +206,9 @@
       wf-recorder
       wget
       wl-clipboard
+      bemenu
       wofi
-      yambar
+      (enableDebugging unstable.yambar)
     ];
     extraSessionCommands = "";
   };
@@ -199,6 +242,11 @@
     # XDG_SESSION_TYPE = "wayland";
     XDG_SESSION_DESKTOP = "sway";
     XDG_CURRENT_DESKTOP = "sway";
+    BEMENU_BACKEND = "wayland";
+    BEMENU_SCALE = "2.5";
+    QT_SCALE_FACTOR = "2.0";
+    GDK_DPI_SCALE = "1.5";
+    BEMENU_OPTS = "-W 0.3 -c --no-overlap -p '' ";
   };
 
   fonts.packages = with pkgs; [
@@ -236,7 +284,7 @@
 
   # system wide installed packages:
   environment.systemPackages = with pkgs; [
-    pinentry-qt
+    # pinentry-qt
     # Android Device Support (Helpful for mount)
     android-udev-rules
     direnv
@@ -251,7 +299,7 @@
   services.udev.packages = [ pkgs.yubikey-personalization ];
   programs.gnupg.agent = {
     enable = true;
-    pinentryFlavor = "qt";
+    pinentryPackage = unstable.pinentry-bemenu;
     enableSSHSupport = true;
   };
 
@@ -260,6 +308,7 @@
 
   # enable libvirtd
   virtualisation.libvirtd.enable = true;
+  virtualisation.docker.enable = true;
   programs.dconf.enable = true;
 
 
@@ -311,7 +360,6 @@
 
   services.openvpn.servers = {
     htb = { config = '' config /home/egoist/Downloads/lab_xEgoist.ovpn ''; autoStart = false; };
-
   };
 
   # Copy the NixOS configuration file and link it from the resulting system
