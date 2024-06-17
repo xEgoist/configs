@@ -1,16 +1,19 @@
-{ config, lib, pkgs, ... }:
-
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+  ];
 
   # Use the systemd-boot EFI boot loader.
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.supportedFilesystems = [ "bcachefs" ];
+  boot.supportedFilesystems = ["bcachefs"];
   # networking.dhcpcd.extraConfig = "nohook resolv.conf";
 
   networking.hostName = "cassini";
@@ -41,11 +44,11 @@
     domain = "yt.cassini.internal";
     nginx.enable = true;
   };
-  
+
   users.users.cassini = {
     isNormalUser = true;
     shell = pkgs.fish;
-    extraGroups = [ "wheel" ];
+    extraGroups = ["wheel"];
     packages = with pkgs; [
       zellij
       fzf
@@ -83,10 +86,9 @@
 
   # List services that you want to enable:
 
-
   # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [ 22 80 443];
-  networking.firewall.allowedUDPPorts = [ 22 80 443 ];
+  networking.firewall.allowedTCPPorts = [22 80 443];
+  networking.firewall.allowedUDPPorts = [22 80 443];
   # Or disable the firewall altogether.
   networking.firewall.enable = true;
 
@@ -112,6 +114,4 @@
   #
   # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
   system.stateVersion = "23.11"; # Did you read the comment?
-
 }
-

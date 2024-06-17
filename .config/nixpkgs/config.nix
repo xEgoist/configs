@@ -1,6 +1,5 @@
-{ pkgs, ... }:
-let
-  unstable = import <unstable> { };
+{pkgs, ...}: let
+  unstable = import <unstable> {};
   homeDir = builtins.getEnv "HOME";
 in {
   allowUnfree = true;
@@ -97,7 +96,7 @@ in {
         '';
         #vimrcConfig.plug.plugins = with pkgs.vimPlugins; [zig-vim];
         vimrcConfig.packages.myVimPackage = with pkgs.vimPlugins; {
-          start = [ zig-vim editorconfig-vim ];
+          start = [zig-vim editorconfig-vim];
         };
       };
       all = pkgs.buildEnv {
@@ -108,8 +107,6 @@ in {
           entr
           ripgrep
         ];
-
       };
     };
 }
-

@@ -1,7 +1,11 @@
-{pkgs, unstable, defaultUser, ...}:
 {
+  pkgs,
+  unstable,
+  defaultUser,
+  ...
+}: {
   # Turn on nix flakes (TODO: Remove once it's no longer experimental)
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.experimental-features = ["nix-command" "flakes"];
   nix.settings = {
     keep-outputs = true;
     keep-derivations = true;
@@ -15,13 +19,15 @@
     };
   };
 
-  security.pki.certificates = [ (builtins.readFile ./intermRoot.crt) ];
+  security.pki.certificates = [(builtins.readFile ./saturnChain.crt)];
   security.doas.enable = true;
-  security.doas.extraRules = [{
-    users = [ defaultUser ];
-    keepEnv = true;
-    persist = true;
-  }];
+  security.doas.extraRules = [
+    {
+      users = [defaultUser];
+      keepEnv = true;
+      persist = true;
+    }
+  ];
   security.sudo.enable = false;
 
   boot.tmp.cleanOnBoot = true;

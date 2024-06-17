@@ -1,10 +1,8 @@
 {
   description = "A collection of flake templates";
 
-  outputs = { self }: {
-
+  outputs = {self}: {
     templates = rec {
-
       rust = {
         path = ./rust_fenix;
         description = "Rust Development Environment";
@@ -30,8 +28,6 @@
       py = python;
     };
 
-
     defaultTemplate = self.templates.c;
-
   };
 }
