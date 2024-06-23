@@ -37,8 +37,9 @@
     );
     overlays = import ./overlays {inherit inputs;};
     nixosConfigurations = {
-      Egoist = mkSystem "egoist" [];
       cassini = mkSystem "cassini" [];
+      Egoist = mkSystem "egoist" [];
+      huygens = mkSystem "huygens" [];
     };
   };
 }
