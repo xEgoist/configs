@@ -32,17 +32,31 @@
     recommendedOptimisation = true;
     recommendedGzipSettings = true;
     recommendedZstdSettings = true;
+    sslProtocols = "TLSv1.3";
+    sslCiphers = null;
     virtualHosts."yt.cassini.internal" = {
       enableACME = false;
       forceSSL = true;
-      sslCertificate = ./certs/yt.cassini.internal.crt;
-      sslCertificateKey = ./certs/yt.cassini.internal.key;
+      kTLS = true;
+      sslCertificate = ./certs/cassini.internal.crt;
+      sslCertificateKey = ./certs/cassini.internal.key;
+    };
+    virtualHosts."ca.cassini.internal" = {
+      root = "/var/www/ca.cassini.internal";
+      enableACME = false;
+      forceSSL = true;
+      kTLS = true;
+      sslCertificate = ./certs/cassini.internal.crt;
+      sslCertificateKey = ./certs/cassini.internal.key;
     };
   };
   services.invidious = {
+    package = pkgs.unstable.invidious;
     enable = true;
     domain = "yt.cassini.internal";
     nginx.enable = true;
+    settings.db.user = "invidious";
+    settings.db.dbname = "invidious";
   };
 
   users.users.cassini = {
@@ -75,16 +89,6 @@
     nix-direnv
     nix-index
   ];
-
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
-
-  # List services that you want to enable:
 
   # Open ports in the firewall.
   networking.firewall.allowedTCPPorts = [22 80 443];
