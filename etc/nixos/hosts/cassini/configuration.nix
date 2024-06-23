@@ -25,6 +25,13 @@
     settings.PasswordAuthentication = false;
   };
 
+  services.soju = {
+    enable = true;
+    hostName = "irc.cassini.internal";
+    tlsCertificateKey = ./certs/cassini.internal.key;
+    tlsCertificate = ./certs/cassini.internal.crt;
+  };
+
   services.nginx = {
     enable = true;
     recommendedTlsSettings = true;
@@ -91,8 +98,8 @@
   ];
 
   # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [22 80 443];
-  networking.firewall.allowedUDPPorts = [22 80 443];
+  networking.firewall.allowedTCPPorts = [22 80 443 6697];
+  networking.firewall.allowedUDPPorts = [22 80 443 6697];
   # Or disable the firewall altogether.
   networking.firewall.enable = true;
 
