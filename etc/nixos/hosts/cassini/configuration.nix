@@ -49,7 +49,7 @@
       sslCertificateKey = ./certs/cassini.internal.key;
     };
     virtualHosts."ca.cassini.internal" = {
-      root = "/var/www/ca.cassini.internal";
+      root = ./www/ca.cassini.internal;
       enableACME = false;
       forceSSL = true;
       kTLS = true;
