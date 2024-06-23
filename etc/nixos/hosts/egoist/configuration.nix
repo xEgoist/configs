@@ -3,9 +3,9 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 {
   inputs,
+  outputs,
   config,
   pkgs,
-  unstable,
   ...
 }: {
   imports = [
@@ -147,7 +147,7 @@
           '';
         });
     in {
-      shell = unstable.fish;
+      shell = pkgs.unstable.fish;
       isNormalUser = true;
       extraGroups = ["wheel" "libvirtd" "docker"];
       packages = with pkgs; [
@@ -294,7 +294,7 @@
   services.udev.packages = [pkgs.yubikey-personalization];
   programs.gnupg.agent = {
     enable = true;
-    pinentryPackage = unstable.pinentry-bemenu;
+    pinentryPackage = pkgs.unstable.pinentry-bemenu;
     enableSSHSupport = true;
   };
 

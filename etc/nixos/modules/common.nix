@@ -1,9 +1,12 @@
 {
+  outputs,
   pkgs,
-  unstable,
   defaultUser,
   ...
 }: {
+  nixpkgs.overlays = [
+    outputs.overlays.unstable
+  ];
   # Turn on nix flakes (TODO: Remove once it's no longer experimental)
   nix.settings.experimental-features = ["nix-command" "flakes"];
   nix.settings = {
