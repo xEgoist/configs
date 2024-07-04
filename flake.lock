@@ -1,1 +1,65 @@
-etc/nixos/flake.lock
+{
+  "nodes": {
+    "matcha": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1704517827,
+        "narHash": "sha256-WhpLwINCuXYxa9y8o4bcFsryvD/VcGi/9VimwJmbobw=",
+        "ref": "refs/heads/main",
+        "rev": "438da25cacd014b99460de76a59a9fecec04f48a",
+        "revCount": 18,
+        "type": "git",
+        "url": "https://codeberg.org/QuincePie/matcha"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://codeberg.org/QuincePie/matcha"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1719426051,
+        "narHash": "sha256-yJL9VYQhaRM7xs0M867ZFxwaONB9T2Q4LnGo1WovuR4=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "89c49874fb15f4124bf71ca5f42a04f2ee5825fd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-24.05",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "matcha": "matcha",
+        "nixpkgs": "nixpkgs",
+        "unstable": "unstable"
+      }
+    },
+    "unstable": {
+      "locked": {
+        "lastModified": 1719254875,
+        "narHash": "sha256-ECni+IkwXjusHsm9Sexdtq8weAq/yUyt1TWIemXt3Ko=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "2893f56de08021cffd9b6b6dfc70fd9ccd51eb60",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}

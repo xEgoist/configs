@@ -58,7 +58,7 @@
   fileSystems."/mnt/music" = {
     device = "127.0.0.1:/music";
     fsType = "nfs";
-    options = ["noatime" "nfsvers=4.2" "rsize=1048576" "wsize=1048576" "intr"];
+    options = ["noatime" "nfsvers=4.2" "rsize=1048576" "wsize=1048576" "soft" "bg" "x-systemd.requires=stunnel.service"];
     # options = [ "noauto" "proto=tcp" "nfsvers=4.2" ];
   };
 
@@ -72,7 +72,7 @@
   fileSystems."/mnt/torrent" = {
     device = "127.0.0.1:/torrent";
     fsType = "nfs";
-    options = ["rw" "noatime" "nfsvers=4.2" "rsize=1048576" "wsize=1048576" "intr"];
+    options = ["rw" "noatime" "nfsvers=4.2" "rsize=1048576" "wsize=1048576" "soft" "bg" "x-systemd.requires=stunnel.service"];
   };
 
   security.rtkit.enable = true;
@@ -224,8 +224,14 @@
     portal = {
       enable = true;
       wlr.enable = true;
-      extraPortals = with pkgs; [xdg-desktop-portal-gtk];
+      extraPortals = with pkgs; [xdg-desktop-portal-kde];
     };
+  };
+
+  qt = {
+    enable = true;
+    platformTheme = "qt5ct";
+    style = "adwaita-dark";
   };
 
   environment.sessionVariables = rec {
@@ -249,7 +255,7 @@
     XDG_CURRENT_DESKTOP = "sway";
     BEMENU_BACKEND = "wayland";
     BEMENU_SCALE = "2.5";
-    QT_SCALE_FACTOR = "2.0";
+    QT_SCALE_FACTOR = "1.5";
     GDK_DPI_SCALE = "1.5";
     BEMENU_OPTS = "-W 0.3 -c --no-overlap -p '' ";
   };
@@ -266,7 +272,6 @@
 
   fonts.fontconfig = {defaultFonts = {emoji = ["Twitter Color Emoji"];};};
 
-  qt.platformTheme = "adwaita-dark";
   programs.steam = {
     enable = true;
     remotePlay.openFirewall =
@@ -282,6 +287,7 @@
     # pinentry-qt
     # Android Device Support (Helpful for mount)
     android-udev-rules
+    # libsForQt5.kio-extras
     direnv
     nix-direnv
     sshfs
