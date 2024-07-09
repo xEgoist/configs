@@ -122,40 +122,59 @@
 
   environment.variables.EDITOR = "hx";
 
+
+  # Firefox
+
+  programs.firefox = {
+    enable = true;
+    preferences = {
+      "browser.tabs.inTitlebar" = 0;
+      # FUCK GTK File Chooser, use KDE from extraPortals
+      "widget.use-xdg-desktop-portal.file-picker" = 1;
+      # Sync with https://github.com/K3V1991/Disable-Firefox-Telemetry-and-Data-Collection/blob/main/README.md
+      "browser.newtabpage.activity-stream.feeds.telemetry" = false;
+      "browser.newtabpage.activity-stream.telemetry" = false;
+      "browser.ping-centre.telemetry" = false;
+      "datareporting.healthreport.service.enabled" = false;
+      "datareporting.healthreport.uploadEnabled" = false;
+      "datareporting.policy.dataSubmissionEnabled" = false;
+      "datareporting.sessions.current.clean" = true;
+      "devtools.onboarding.telemetry.logged" = false;
+      "toolkit.telemetry.archive.enabled" = false;
+      "toolkit.telemetry.bhrPing.enabled" = false;
+      "toolkit.telemetry.enabled" = false;
+      "toolkit.telemetry.firstShutdownPing.enabled" = false;
+      "toolkit.telemetry.hybridContent.enabled" = false;
+      "toolkit.telemetry.newProfilePing.enabled" = false;
+      "toolkit.telemetry.prompted" = 2;
+      "toolkit.telemetry.rejected" = true;
+      "toolkit.telemetry.reportingpolicy.firstRun" = false;
+      "toolkit.telemetry.server" = "";
+      "toolkit.telemetry.shutdownPingSender.enabled" = false;
+      "toolkit.telemetry.unified" = false;
+      "toolkit.telemetry.unifiedIsOptIn" = false;
+      "toolkit.telemetry.updatePing.enabled" = false;
+      # Extra
+      "identity.fxaccounts.enabled" = false;
+      "privacy.donottrackheader.enabled" = true;
+      "ui.prefersReducedMotion" = 1;
+      "extensions.pocket.enabled" = false;
+      "signon.autofillForms" = false;
+      "services.sync.engine.passwords" = false;
+      "privacy.trackingprotection.enabled" = true;
+    };
+  };
+
   # Fucking sudo man
-  users.users.egoist =
-    # Disgusting but whatever.
-    let
-      mullvadPolicies = pkgs.writeText "policies.json" (builtins.toJSON {
-        policies.DisableAppUpdate = true;
-        policies.Extensions.Install = [
-          "https://addons.mozilla.org/firefox/downloads/file/4246600/bitwarden_password_manager-latest.xpi"
-          "https://addons.mozilla.org/firefox/downloads/file/4173642/kagi_search_for_firefox-latest.xpi"
-        ];
-      });
-      customMullvadBrowser =
-        (pkgs.mullvad-browser.override {
-          # Since HiDPI sucks ass in xwayland, we got to do it per application instead.
-          extraPrefs = ''
-            pref("browser.tabs.inTitlebar", 0);
-          '';
-        })
-        .overrideAttrs (oldAttrs: {
-          postInstall = ''
-            ${oldAttrs.postInstall or ""}
-            install -Dvm644 ${mullvadPolicies} $out/share/mullvad-browser/distribution/policies.json
-          '';
-        });
-    in {
+  users.users.egoist = {
       shell = pkgs.unstable.fish;
       isNormalUser = true;
       extraGroups = ["wheel" "libvirtd" "docker"];
       packages = with pkgs; [
         brave
-        customMullvadBrowser
         emacs29
-        firefox
-        fzf
+        bfs
+        fzy
         gpgme
         inputs.matcha.packages.${system}.default
         irssi
@@ -207,7 +226,7 @@
       unstable.foot
       unstable.imhex
       unstable.vscode
-      unstable.wayland-protocols
+      # unstable.wayland-protocols
       wf-recorder
       wget
       wl-clipboard
@@ -288,6 +307,7 @@
     # Android Device Support (Helpful for mount)
     android-udev-rules
     # libsForQt5.kio-extras
+    git-crypt
     direnv
     nix-direnv
     sshfs
