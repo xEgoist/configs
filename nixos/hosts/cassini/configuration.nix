@@ -27,6 +27,7 @@
 
   services.soju = {
     enable = true;
+    enableMessageLogging = true;
     hostName = "irc.cassini.internal";
     tlsCertificateKey = ./certs/cassini.internal.key;
     tlsCertificate = ./certs/cassini.internal.crt;

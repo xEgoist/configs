@@ -54,12 +54,41 @@
       accept = 20490;
       connect = "127.0.0.1:2049";
       CAfile = "/etc/ssl/certs/ca-bundle.crt";
-      cert = "/etc/nixos/hosts/huygens/certs/huygens.internal.crt";
-      key = "/etc/nixos/hosts/huygens/certs/huygens.internal.key";
+      cert = "${./certs/huygens.internal.crt}";
+      key = "${./certs/huygens.internal.key}";
       verifyChain = "yes";
       requireCert = "yes";
     };
   };
+
+  services.syncthing = {
+    enable = true;
+    openDefaultPorts = true;
+    settings.gui = {
+      insecureSkipHostcheck = true;
+    };
+  };
+
+  services.nginx = {
+    enable = true;
+    recommendedTlsSettings = true;
+    recommendedProxySettings = true;
+    recommendedOptimisation = true;
+    recommendedGzipSettings = true;
+    recommendedZstdSettings = true;
+    sslProtocols = "TLSv1.3";
+    sslCiphers = null;
+    proxyTimeout = "600s";
+    virtualHosts."syncthing.huygens.internal" = {
+      locations."/".proxyPass = "http://${config.services.syncthing.guiAddress}";
+      enableACME = false;
+      forceSSL = true;
+      kTLS = true;
+      sslCertificate = ./certs/huygens.internal.crt;
+      sslCertificateKey = ./certs/huygens.internal.key;
+    };
+  };
+  services.oauth2-proxy.nginx.virtualHosts."syncthing.huygens.internal" = { };
 
   networking.hostName = "huygens";
 
@@ -100,8 +129,8 @@
   ];
 
   # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [22 20490];
-  networking.firewall.allowedUDPPorts = [22 20490];
+  networking.firewall.allowedTCPPorts = [22 443 20490];
+  networking.firewall.allowedUDPPorts = [22 443 20490];
   # Or disable the firewall altogether.
   networking.firewall.enable = true;
 
