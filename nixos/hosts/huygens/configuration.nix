@@ -61,11 +61,12 @@
     };
   };
 
-  services.syncthing = {
+  services.gonic = {
     enable = true;
-    openDefaultPorts = true;
-    settings.gui = {
-      insecureSkipHostcheck = true;
+    settings = {
+      playlists-path = [ "/persist/music/playlists" ];
+      podcast-path = [ "/persist/music/podcasts" ];
+      music-path = [ "/persist/music" ];
     };
   };
 
@@ -79,8 +80,8 @@
     sslProtocols = "TLSv1.3";
     sslCiphers = null;
     proxyTimeout = "600s";
-    virtualHosts."syncthing.huygens.internal" = {
-      locations."/".proxyPass = "http://${config.services.syncthing.guiAddress}";
+    virtualHosts."gonic.huygens.internal" = {
+      locations."/".proxyPass = "http://127.0.0.1:4747";
       enableACME = false;
       forceSSL = true;
       kTLS = true;
@@ -88,7 +89,6 @@
       sslCertificateKey = ./certs/huygens.internal.key;
     };
   };
-  services.oauth2-proxy.nginx.virtualHosts."syncthing.huygens.internal" = { };
 
   networking.hostName = "huygens";
 
