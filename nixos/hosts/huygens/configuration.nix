@@ -64,9 +64,9 @@
   services.gonic = {
     enable = true;
     settings = {
-      playlists-path = [ "/persist/music/playlists" ];
-      podcast-path = [ "/persist/music/podcasts" ];
-      music-path = [ "/persist/music" ];
+      playlists-path = ["/persist/music/playlists"];
+      podcast-path = ["/persist/music/podcasts"];
+      music-path = ["/persist/music"];
     };
   };
 

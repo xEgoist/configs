@@ -24,6 +24,20 @@
 
   networking.extraHosts = "";
 
+  systemd.network.networks = let
+    networkConfig = {
+      DHCP = "yes";
+      DNSSEC = "yes";
+      # DNSOverTLS = "yes";
+    };
+  in {
+    "40-wired" = {
+      enable = true;
+      name = "en*";
+      inherit networkConfig;
+    };
+  };
+
   # We use dhcpcd here. no network manager BS.
   # networking.dhcpcd.extraConfig = "nohook resolv.conf";
   nixpkgs.config.allowUnfree = true;
@@ -122,7 +136,6 @@
 
   environment.variables.EDITOR = "hx";
 
-
   # Firefox
 
   programs.firefox = {
@@ -167,36 +180,36 @@
 
   # Fucking sudo man
   users.users.egoist = {
-      shell = pkgs.unstable.fish;
-      isNormalUser = true;
-      extraGroups = ["wheel" "libvirtd" "docker"];
-      packages = with pkgs; [
-        brave
-        emacs29
-        bfs
-        fzy
-        gpgme
-        inputs.matcha.packages.${system}.default
-        irssi
-        krita
-        libnotify
-        mpc_cli
-        mpv
-        ncmpc
-        neomutt
-        obs-studio
-        qbittorrent
-        streamlink
-        streamlink-twitch-gui-bin
-        tealdeer
-        unstable.jujutsu
-        unstable.zellij
-        unzip
-        urlscan
-        w3m
-        xdg-utils
-      ];
-    };
+    shell = pkgs.unstable.fish;
+    isNormalUser = true;
+    extraGroups = ["wheel" "libvirtd" "docker"];
+    packages = with pkgs; [
+      brave
+      emacs29
+      bfs
+      fzy
+      gpgme
+      inputs.matcha.packages.${system}.default
+      irssi
+      krita
+      libnotify
+      mpc_cli
+      mpv
+      ncmpc
+      neomutt
+      obs-studio
+      qbittorrent
+      streamlink
+      streamlink-twitch-gui-bin
+      tealdeer
+      unstable.jujutsu
+      unstable.zellij
+      unzip
+      urlscan
+      w3m
+      xdg-utils
+    ];
+  };
 
   programs.sway = {
     enable = true;

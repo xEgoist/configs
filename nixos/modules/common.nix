@@ -34,8 +34,9 @@
   security.sudo.enable = false;
 
   boot.tmp.cleanOnBoot = true;
-  networking.dhcpcd.enable = true;
-  services.resolved.enable = false;
+  networking.useNetworkd = true;
+  networking.useDHCP = false;
+  systemd.network.wait-online.anyInterface = true;
   time.timeZone = "US/Central";
 
   programs.fish.enable = true;
