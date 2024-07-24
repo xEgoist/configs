@@ -13,7 +13,7 @@ set $term-float foot
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
-set $menu wofi -c ~/.config/wofi/config -I
+set $menu bemenu-run
 
 
 ### Idle configuration
@@ -201,8 +201,7 @@ bindsym $mod+r mode "resize"
 # App shortcuts
 #
 
-# bindsym $mod+o exec firefox --name firefox
-bindsym $mod+o exec mullvad-browser --name mullvad_browser
+bindsym $mod+o exec firefox --name firefox
 
 #
 # Screenshots

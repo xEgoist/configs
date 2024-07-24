@@ -2,10 +2,11 @@
 #exec /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 #exec --no-startup-id /nix/store/2n0k96njvgmazv8sr96jlzmyidffmdk7-polkit-gnome-0.105/libexec/polkit-gnome-authentication-agent-1
 # Desktop notifications
-exec mako --default-timeout=5000
+exec mako
+
 
 # GTK3 applications take a long time to start
-# exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
+exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK BEMENU_OPTS
 
 exec --no-startup-id dbus-update-activation-environment --all
 

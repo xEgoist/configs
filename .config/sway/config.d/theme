@@ -41,4 +41,4 @@ client.background       #F8F8F2 #44475A #F8F8F2 #44475A   #44475A
 # exec_always kill yambar
 # exec_always yambar
 
-exec_always "sh -c 'pkill yambar; yambar'"
+exec_always "sh -c 'pkill yambar; /home/egoist/projects/c_projects/yambar/builddir/yambar'"

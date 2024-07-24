@@ -38,6 +38,7 @@ for_window [title="File Operation Progress"] floating enable, border pixel 1, st
 for_window [app_id="floating_shell_portrait"] floating enable, border pixel 1, sticky enable, resize set width 30 ppt height 40 ppt
 for_window [app_id="xsensors"] floating enable
 for_window [title="Save File"] floating enable
+for_window [app_id="org.freedesktop.impl.portal.desktop.kde"] floating enable
 for_window [title="LibreWolf — Sharing Indicator"] floating enable
 for_window [title="Firefox — Sharing Indicator"] floating enable
 # Inhibit idle
