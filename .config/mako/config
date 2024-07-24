@@ -1,0 +1,9 @@
+width=800
+border-size=0
+border-radius=8
+font=Berkeley Mono 24
+background-color=#C8046A
+outer-margin=10,20,5
+default-timeout=5000
+on-notify=exec pw-cat -p ~/.config/mako/alert.mp3
+
