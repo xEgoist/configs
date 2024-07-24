@@ -1,6 +1,0 @@
-zsh-users/zsh-autosuggestions
-zsh-users/zsh-completions
-zdharma/fast-syntax-highlighting
-mafredri/zsh-async
-Aloxaf/fzf-tab
-
