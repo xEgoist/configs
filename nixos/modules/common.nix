@@ -36,6 +36,19 @@
   boot.tmp.cleanOnBoot = true;
   networking.useNetworkd = true;
   networking.useDHCP = false;
+  systemd.network.networks = let
+    networkConfig = {
+      DHCP = "yes";
+      DNSSEC = "yes";
+      # DNSOverTLS = "yes";
+    };
+  in {
+    "40-wired" = {
+      enable = true;
+      name = "en*";
+      inherit networkConfig;
+    };
+  };
   systemd.network.wait-online.anyInterface = true;
   time.timeZone = "US/Central";
 

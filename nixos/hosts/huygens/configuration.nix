@@ -46,6 +46,7 @@
     /export 127.0.0.1(rw,fsid=0,insecure,no_subtree_check,no_root_squash)
     /export/music 127.0.0.1(rw,insecure,no_subtree_check,no_root_squash)
     /export/torrent 127.0.0.1(rw,insecure,no_subtree_check,no_root_squash)
+    /export/games 127.0.0.1(rw,insecure,no_subtree_check,no_root_squash)
   '';
 
   services.stunnel.enable = true;

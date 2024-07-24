@@ -24,19 +24,6 @@
 
   networking.extraHosts = "";
 
-  systemd.network.networks = let
-    networkConfig = {
-      DHCP = "yes";
-      DNSSEC = "yes";
-      # DNSOverTLS = "yes";
-    };
-  in {
-    "40-wired" = {
-      enable = true;
-      name = "en*";
-      inherit networkConfig;
-    };
-  };
 
   # We use dhcpcd here. no network manager BS.
   # networking.dhcpcd.extraConfig = "nohook resolv.conf";
@@ -212,6 +199,7 @@
   };
 
   programs.sway = {
+    package = pkgs.unstable.sway;
     enable = true;
     wrapperFeatures.gtk = true;
     extraPackages = with pkgs; [
