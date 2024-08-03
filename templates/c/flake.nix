@@ -1,73 +1,86 @@
 {
-  description = "Flexible C Development Environments with LLVM17 and GCC 13";
+  description = "C Development Environments with LLVM 17 and GCC 14";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   };
 
-  outputs = {
-    self,
-    nixpkgs,
-  }: let
-    supportedSystems = ["x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin"];
-    forAllSystems = f:
-      nixpkgs.lib.genAttrs supportedSystems (system:
-        f {
-          pkgs = import nixpkgs {inherit system;};
-          pkgsCross = import nixpkgs {
-            crossSystem = {config = "riscv64-none-elf";};
-            inherit system;
-          };
-        });
+  outputs = { self, nixpkgs }:
+    let
+      forAllSystems = f:
+        nixpkgs.lib.genAttrs nixpkgs.lib.platforms.unix (system:
+          f {
+            pkgs = import nixpkgs { inherit system; };
+            pkgsCross = import nixpkgs {
+              crossSystem = { config = "x86_64-linux"; };
+              inherit system;
+            };
+          });
 
-    createShell = pkgs: commonPkgs: stdenv:
-      pkgs.mkShell.override {inherit stdenv;} {
-        packages = with pkgs; commonPkgs;
-      };
-  in {
-    formatter = forAllSystems ({pkgs, ...}: pkgs.nixpkgs-fmt);
-    devShells = forAllSystems ({
-        pkgs,
-        pkgsCross,
-      }: let
-        commonPkgs = with pkgs;
-          [
+      mkShell = pkgs: { stdenv ? pkgs.stdenv, packages ? [ ] }:
+        pkgs.mkShell.override { inherit stdenv; } {
+          inherit packages;
+        };
+
+    in
+    {
+      formatter = forAllSystems ({ pkgs, ... }: pkgs.nixpkgs-fmt);
+
+      devShells = forAllSystems ({ pkgs, ... }:
+        let
+          commonPackages = with pkgs; [
             ccache
             clang-tools_17
             cmake
             cmocka
-            # dtc  # for RISC-V DEV
             meson
             ninja
             pkg-config
-            # pkgsCross.stdenv.cc # for RISC-V DEV
             python3
-          ]
-          ++ lib.optionals (!stdenv.isDarwin) [
+          ] ++ lib.optionals (!stdenv.isDarwin) [
             valgrind
             gdb
             gf
           ];
-        moldPkgs = with pkgs; [mold];
-        llvmPkgs = with pkgs; [llvmPackages_17.lldb llvmPackages_17.llvm llvmPackages_17.bintools];
 
-        gccStdEnv = pkgs.gcc13Stdenv;
-        llvmStdEnv = pkgs.llvmPackages_17.stdenv;
-        gccMoldStdEnv = pkgs.stdenvAdapters.useMoldLinker gccStdEnv;
-        llvmMoldStdEnv = pkgs.stdenvAdapters.useMoldLinker llvmStdEnv;
-        gccGoldStdEnv = pkgs.stdenvAdapters.useGoldLinker gccStdEnv;
-        llvmGoldStdEnv = pkgs.stdenvAdapters.useGoldLinker llvmStdEnv;
-      in rec
-      {
-        gcc = createShell pkgs commonPkgs gccStdEnv;
-        gccMold = createShell pkgs (commonPkgs ++ moldPkgs) gccMoldStdEnv;
-        gccGold = createShell pkgs commonPkgs gccGoldStdEnv;
+          llvmPackages = with pkgs.llvmPackages_17; [
+            lldb
+            llvm
+            bintools
+          ];
 
-        llvm = createShell pkgs (commonPkgs ++ llvmPkgs) llvmStdEnv;
-        llvmMold = createShell pkgs (commonPkgs ++ llvmPkgs ++ moldPkgs) llvmMoldStdEnv;
-        llvmGold = createShell pkgs (commonPkgs ++ llvmPkgs) llvmGoldStdEnv;
+          mkLinkerShell = { stdenv, packages ? [ ] }:
+            mkShell pkgs {
+              inherit stdenv;
+              packages = commonPackages ++ packages;
+            };
 
-        default = gcc;
-      });
-  };
+          gccStdenv = pkgs.gcc14Stdenv;
+          llvmStdenv = pkgs.llvmPackages_17.stdenv;
+        in
+        {
+          default = mkLinkerShell { stdenv = gccStdenv; };
+          gcc = mkLinkerShell { stdenv = gccStdenv; };
+          gccMold = mkLinkerShell {
+            stdenv = pkgs.stdenvAdapters.useMoldLinker gccStdenv;
+            packages = [ pkgs.mold ];
+          };
+          gccGold = mkLinkerShell {
+            stdenv = pkgs.stdenvAdapters.useGoldLinker gccStdenv;
+          };
+
+          llvm = mkLinkerShell {
+            stdenv = llvmStdenv;
+            packages = llvmPackages;
+          };
+          llvmMold = mkLinkerShell {
+            stdenv = pkgs.stdenvAdapters.useMoldLinker llvmStdenv;
+            packages = llvmPackages ++ [ pkgs.mold ];
+          };
+          llvmGold = mkLinkerShell {
+            stdenv = pkgs.stdenvAdapters.useGoldLinker llvmStdenv;
+            packages = llvmPackages;
+          };
+        });
+    };
 }
