@@ -24,7 +24,6 @@
 
   networking.extraHosts = "";
 
-
   # We use dhcpcd here. no network manager BS.
   # networking.dhcpcd.extraConfig = "nohook resolv.conf";
   nixpkgs.config.allowUnfree = true;
@@ -171,9 +170,10 @@
     isNormalUser = true;
     extraGroups = ["wheel" "libvirtd" "docker"];
     packages = with pkgs; [
+      bfs
       brave
       emacs29
-      bfs
+      unstable.factorio
       fzy
       gpgme
       inputs.matcha.packages.${system}.default
@@ -199,7 +199,6 @@
   };
 
   programs.sway = {
-    package = pkgs.unstable.sway;
     enable = true;
     wrapperFeatures.gtk = true;
     extraPackages = with pkgs; [
@@ -223,7 +222,7 @@
       swayimg
       swaylock
       sysstat
-      # unstable.egl-wayland
+      unstable.egl-wayland
       unstable.foot
       unstable.imhex
       unstable.vscode
