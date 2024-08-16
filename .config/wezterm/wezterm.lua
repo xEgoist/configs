@@ -1,3 +1,4 @@
+-- Pull in the wezterm API
 local wezterm = require 'wezterm'
 
 -- This table will hold the configuration.
@@ -9,20 +10,27 @@ if wezterm.config_builder then
   config = wezterm.config_builder()
 end
 
+-- This is where you actually apply your config choices
 
+-- For example, changing the color scheme:
 config.color_scheme = 'Ibm 3270 (High Contrast) (Gogh)'
--- config.font = wezterm.font 'Berkeley Mono Variable'
 
-config.font = wezterm.font_with_fallback {
-        {family = 'Berkeley Mono'},
-}
+config.font = wezterm.font 'Berkeley Mono Variable'
 
+-- config.font = wezterm.font_with_fallback {
+--         {family = 'Berkeley Mono Variable'},
+-- }
+
+config.font_size = 18
 config.adjust_window_size_when_changing_font_size = true
-config.font_size = 25
+config.use_resize_increments = true
 config.default_cursor_style = 'SteadyBar'
-config.prefer_egl = true
 config.enable_tab_bar = false
-config.window_decorations = "INTEGRATED_BUTTONS | MACOS_FORCE_DISABLE_SHADOW"
+-- config.window_decorations = "INTEGRATED_BUTTONS | RESIZE | MACOS_FORCE_DISABLE_SHADOW"
+-- config.window_decorations = "MACOS_FORCE_DISABLE_SHADOW"
+-- config.integrated_title_button_alignment = "Right"
+config.integrated_title_buttons = { 'Close' }
+config.window_close_confirmation = 'NeverPrompt'
 
 config.window_padding = {
   left = 0,
@@ -30,21 +38,6 @@ config.window_padding = {
   top = 0,
   bottom = 0,
 }
-
-local act = wezterm.action
-config.mouse_bindings = {
-  {
-    event = { Down = { streak = 1, button = { WheelUp = 1 } } },
-    mods = 'NONE',
-    action = act.ScrollByLine(-3),
-  },
-  {
-    event = { Down = { streak = 1, button = { WheelDown = 1 } } },
-    mods = 'NONE',
-    action = act.ScrollByLine(3),
-  },
-}
-
 
 return config
 
