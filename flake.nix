@@ -8,6 +8,10 @@
       url = "git+https://codeberg.org/QuincePie/matcha";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    pastel = {
+      url = "git+https://codeberg.org/QuincePie/pastel";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {

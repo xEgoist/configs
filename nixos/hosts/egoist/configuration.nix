@@ -153,7 +153,7 @@
       "toolkit.telemetry.unified" = false;
       "toolkit.telemetry.unifiedIsOptIn" = false;
       "toolkit.telemetry.updatePing.enabled" = false;
-      # Extra
+      # Extra Privacy
       "identity.fxaccounts.enabled" = false;
       "privacy.donottrackheader.enabled" = true;
       "ui.prefersReducedMotion" = 1;
@@ -161,6 +161,11 @@
       "signon.autofillForms" = false;
       "services.sync.engine.passwords" = false;
       "privacy.trackingprotection.enabled" = true;
+      # Audio
+      "media.getusermedia.aec_enabled" = false;
+      "media.getusermedia.agc_enabled" = false;
+      "media.getusermedia.noise_enabled" = false;
+      "media.getusermedia.hpf_enabled" = false;
     };
   };
 

@@ -1,4 +1,5 @@
 {
+  inputs,
   config,
   lib,
   pkgs,
@@ -19,6 +20,9 @@
   networking.hostName = "cassini";
 
   # environment.enableDebugInfo = true;
+
+  security.acme.defaults.email = "pie@quince.org";
+  security.acme.acceptTerms = true;
 
   services.openssh = {
     enable = true;
@@ -42,12 +46,45 @@
     recommendedZstdSettings = true;
     sslProtocols = "TLSv1.3";
     sslCiphers = null;
+    commonHttpConfig = ''
+      limit_req_zone $binary_remote_addr zone=paste_limit:20m rate=2r/m;
+      limit_req_status 429;
+    '';
     virtualHosts."yt.cassini.internal" = {
       enableACME = false;
       forceSSL = true;
       kTLS = true;
       sslCertificate = ./certs/cassini.internal.crt;
       sslCertificateKey = ./certs/cassini.internal.key;
+      extraConfig = ''
+        allow 10.0.0.0/8;
+        deny all;
+      '';
+    };
+    virtualHosts."paste.cassini.internal" = {
+      enableACME = false;
+      forceSSL = true;
+      kTLS = true;
+      sslCertificate = ./certs/cassini.internal.crt;
+      sslCertificateKey = ./certs/cassini.internal.key;
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:21338";
+      };
+      extraConfig = ''
+        allow 10.0.0.0/8;
+        deny all;
+      '';
+    };
+    virtualHosts."paste.quince.org" = {
+      enableACME = true;
+      forceSSL = true;
+      kTLS = true;
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:21338";
+        extraConfig = ''
+          limit_req zone=paste_limit burst=20 nodelay;
+        '';
+      };
     };
     virtualHosts."ca.cassini.internal" = {
       root = ./www/ca.cassini.internal;
@@ -56,6 +93,10 @@
       kTLS = true;
       sslCertificate = ./certs/cassini.internal.crt;
       sslCertificateKey = ./certs/cassini.internal.key;
+      extraConfig = ''
+        allow 10.0.0.0/8;
+        deny all;
+      '';
     };
   };
   services.invidious = {
@@ -65,6 +106,18 @@
     nginx.enable = true;
     settings.db.user = "invidious";
     settings.db.dbname = "invidious";
+  };
+
+  systemd.services.pastel = let
+    pastel = inputs.pastel.packages.${pkgs.system}.default;
+  in {
+    wantedBy = ["multi-user.target"];
+    after = ["network.target"];
+    description = "pastebin alternative";
+    serviceConfig = {
+      ExecStart = "${pastel}/bin/pastel";
+      StateDirectory = "pastel";
+    };
   };
 
   users.users.cassini = {
