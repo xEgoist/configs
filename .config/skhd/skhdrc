@@ -1,0 +1,48 @@
+cmd - return : /Applications/WezTerm.app/Contents/MacOS/wezterm
+cmd - o : open -a Safari
+cmd - q : ~/.config/skhd/closewindow.sh
+
+# cmd - d : skhd -k "cmd - space"
+
+cmd - d: fd -td -eapp . /Applications /Applications/Utilities /System/Applications /System/Applications/Utilities \
+--format '{/.}' | choose | xargs -I {} open -a "{}.app"
+
+
+cmd + shift - s: ~/.config/skhd/switchapp.sh
+cmd + shift - k: ~/.config/skhd/killapp.sh
+
+
+
+cmd - right : yabai -m window --focus east || yabai -m window --focus west
+cmd - left : yabai -m window --focus west || yabai -m window --focus east
+cmd - up : yabai -m window --focus north || yabai -m window --focus south
+cmd - down : yabai -m window --focus south || yabai -m window --focus north
+
+cmd + shift - right : yabai -m window --warp east || yabai -m window --warp west
+cmd + shift - left : yabai -m window --warp west || yabai -m window --warp east
+cmd + shift - up : yabai -m window --warp north || yabai -m window --warp south
+cmd + shift - down : yabai -m window --warp south || yabai -m window --warp north
+
+
+cmd - 1 : ~/.config/skhd/spaces.sh 1 focus
+cmd - 2 : ~/.config/skhd/spaces.sh 2 focus
+cmd - 3 : ~/.config/skhd/spaces.sh 3 focus
+cmd - 4 : ~/.config/skhd/spaces.sh 4 focus
+cmd - 5 : ~/.config/skhd/spaces.sh 5 focus
+cmd - 6 : ~/.config/skhd/spaces.sh 6 focus
+cmd - 7 : ~/.config/skhd/spaces.sh 7 focus
+cmd - 8 : ~/.config/skhd/spaces.sh 8 focus
+cmd - 9 : ~/.config/skhd/spaces.sh 9 focus
+cmd - 0 : ~/.config/skhd/spaces.sh 10 focus
+
+cmd + shift - 1 : ~/.config/skhd/spaces.sh 1 move
+cmd + shift - 2 : ~/.config/skhd/spaces.sh 2 move
+cmd + shift - 3 : ~/.config/skhd/spaces.sh 3 move
+cmd + shift - 4 : ~/.config/skhd/spaces.sh 4 move
+cmd + shift - 5 : ~/.config/skhd/spaces.sh 5 move
+cmd + shift - 6 : ~/.config/skhd/spaces.sh 6 move
+cmd + shift - 7 : ~/.config/skhd/spaces.sh 7 move
+cmd + shift - 8 : ~/.config/skhd/spaces.sh 8 move
+cmd + shift - 9 : ~/.config/skhd/spaces.sh 9 move
+cmd + shift - 0 : ~/.config/skhd/spaces.sh 10 move
+

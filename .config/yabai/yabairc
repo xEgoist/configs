@@ -1,0 +1,23 @@
+yabai -m signal --add event=dock_did_restart action="sudo yabai --load-sa"
+sudo yabai --load-sa
+
+
+yabai -m config layout bsp
+yabai -m config focus_follows_mouse autoraise
+# set mouse interaction modifier key to command
+yabai -m config mouse_modifier cmd
+
+# set modifier + left-click drag to move window (default: move)
+yabai -m config mouse_action1 move
+
+# set modifier + right-click drag to resize window (default: resize)
+yabai -m config mouse_action2 resize
+
+yabai -m config window_animation_duration 0.0
+yabai -m config window_shadow off
+
+# Focus window after creation
+yabai -m signal --add event=window_created action="yabai -m window --focus \$YABAI_WINDOW_ID"
+
+# Focus window after application is activated
+yabai -m signal --add event=application_activated action="yabai -m window --focus \$YABAI_WINDOW_ID"

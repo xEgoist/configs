@@ -23,13 +23,11 @@ config.font = wezterm.font 'Berkeley Mono Variable'
 
 config.font_size = 18
 config.adjust_window_size_when_changing_font_size = true
-config.use_resize_increments = true
+-- config.use_resize_increments = true
 config.default_cursor_style = 'SteadyBar'
 config.enable_tab_bar = false
--- config.window_decorations = "INTEGRATED_BUTTONS | RESIZE | MACOS_FORCE_DISABLE_SHADOW"
+config.window_decorations = "RESIZE | MACOS_FORCE_DISABLE_SHADOW"
 -- config.window_decorations = "MACOS_FORCE_DISABLE_SHADOW"
--- config.integrated_title_button_alignment = "Right"
-config.integrated_title_buttons = { 'Close' }
 config.window_close_confirmation = 'NeverPrompt'
 
 config.window_padding = {
