@@ -13,6 +13,8 @@ cmd + shift - k: ~/.config/skhd/killapp.sh
 
 
 
+cmd - space : yabai -m window --toggle float
+
 cmd - right : yabai -m window --focus east || yabai -m window --focus west
 cmd - left : yabai -m window --focus west || yabai -m window --focus east
 cmd - up : yabai -m window --focus north || yabai -m window --focus south
