@@ -36,6 +36,14 @@
   nixpkgs.config.allowUnfree = true;
   boot.initrd.kernelModules = [ "amdgpu" ];
 
+  age.identityPaths = [ "/var/lib/persistent/titan_ed25519" ];
+  age.secrets.titanStunnel = {
+    file = ../../secrets/titan.internal.key.age;
+    owner = "nobody";
+    group = "nogroup";
+    mode = "0400";
+  };
+
   # # SWITCH
   # networking.interfaces.enp4s0.ipv4.addresses = [
   #   {
@@ -49,7 +57,7 @@
       connect = "10.0.1.3:20490";
       accept = "127.0.0.1:2049";
       cert = "${./certs/titan.internal.crt}";
-      key = "${./certs/titan.internal.key}";
+      key = config.age.secrets.titanStunnel.path;
       CAfile = "/etc/ssl/certs/ca-bundle.crt";
     };
   };
@@ -256,10 +264,10 @@
     extraPackages = with pkgs; [
       acpi
       btop
-      dex
+      # dex
       adwaita-icon-theme
       grim
-      gtk-layer-shell
+      # gtk-layer-shell
       jq
       mako
       mpd
@@ -318,7 +326,6 @@
     _JAVA_AWT_WM_NONREPARENTING = "1";
     ## xdg session
     # XDG_SESSION_TYPE = "wayland";
-    # TODO: ENABLE ME
     XDG_SESSION_DESKTOP = "sway";
     XDG_CURRENT_DESKTOP = "sway";
     BEMENU_BACKEND = "wayland";
@@ -357,6 +364,7 @@
 
   # system wide installed packages:
   environment.systemPackages = with pkgs; [
+    agenix
     # pinentry-qt
     attic-client
     # Android Device Support (Helpful for mount)

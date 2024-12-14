@@ -13,11 +13,26 @@
     ./hardware-configuration.nix
   ];
 
+  # NOTE: Huygens doesn't require any overlays for now
+
   # Use the systemd-boot EFI boot loader.
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.supportedFilesystems = [ "bcachefs" ];
+
+  age.secrets.huygensStunnel = {
+    file = ../../secrets/huygens.internal.key.age;
+    owner = "nobody";
+    group = "nogroup";
+    mode = "0400";
+  };
+  age.secrets.huygensNginx = {
+    file = ../../secrets/huygens.internal.key.age;
+    owner = "nginx";
+    group = "nginx";
+    mode = "0400";
+  };
 
   fileSystems."/persist" = {
     device = "UUID=066511c4-76fc-49fa-b71e-a411377877a4";
@@ -57,7 +72,7 @@
       connect = "127.0.0.1:2049";
       CAfile = "/etc/ssl/certs/ca-bundle.crt";
       cert = "${./certs/huygens.internal.crt}";
-      key = "${./certs/huygens.internal.key}";
+      key = config.age.secrets.huygensStunnel.path;
       verifyChain = "yes";
       requireCert = "yes";
     };
@@ -125,7 +140,7 @@
       forceSSL = true;
       kTLS = true;
       sslCertificate = ./certs/huygens.internal.crt;
-      sslCertificateKey = ./certs/huygens.internal.key;
+      sslCertificateKey = config.age.secrets.huygensNginx.path;
     };
 
     virtualHosts."cache.huygens.internal" = {
@@ -134,7 +149,7 @@
       forceSSL = true;
       kTLS = true;
       sslCertificate = ./certs/huygens.internal.crt;
-      sslCertificateKey = ./certs/huygens.internal.key;
+      sslCertificateKey = config.age.secrets.huygensNginx.path;
       extraConfig = ''
         client_max_body_size 2048M;
       '';

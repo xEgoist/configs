@@ -1,4 +1,5 @@
 {
+  inputs,
   config,
   lib,
   pkgs,
@@ -23,6 +24,14 @@
   # networking.dhcpcd.extraConfig = "nohook resolv.conf";
 
   networking.hostName = "cassini";
+  # AgeNix
+  age.secrets.cassiniNginx = {
+    file = ../../secrets/cassini.internal.key.age;
+    owner = "nginx";
+    group = "nginx";
+    mode = "0400";
+  };
+
 
   # environment.enableDebugInfo = true;
 
@@ -60,7 +69,7 @@
       forceSSL = true;
       kTLS = true;
       sslCertificate = ./certs/cassini.internal.crt;
-      sslCertificateKey = ./certs/cassini.internal.key;
+      sslCertificateKey = config.age.secrets.cassiniNginx.path;
       extraConfig = ''
         allow 10.0.0.0/8;
         deny all;
@@ -71,7 +80,7 @@
       forceSSL = true;
       kTLS = true;
       sslCertificate = ./certs/cassini.internal.crt;
-      sslCertificateKey = ./certs/cassini.internal.key;
+      sslCertificateKey = config.age.secrets.cassiniNginx.path;
       locations."/" = {
         proxyPass = "http://127.0.0.1:21338";
       };
@@ -97,7 +106,7 @@
       forceSSL = true;
       kTLS = true;
       sslCertificate = ./certs/cassini.internal.crt;
-      sslCertificateKey = ./certs/cassini.internal.key;
+      sslCertificateKey = config.age.secrets.cassiniNginx.path;
       extraConfig = ''
         allow 10.0.0.0/8;
         deny all;

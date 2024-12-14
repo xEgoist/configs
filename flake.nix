@@ -4,6 +4,10 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     matcha = {
       url = "git+https://codeberg.org/QuincePie/matcha";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -18,6 +22,7 @@
     {
       self,
       nixpkgs,
+      agenix,
       ...
     }@inputs:
     let
@@ -45,6 +50,7 @@
             defaultUser = nixpkgs.lib.toLower hostname;
           };
           modules = [
+            agenix.nixosModules.default
             ./nixos/modules/common.nix
             (./nixos/hosts + "/${nixpkgs.lib.toLower hostname}/configuration.nix")
           ] ++ extraModules;

@@ -5,6 +5,7 @@
   custom = _self: super: {
     matcha = inputs.matcha.packages.${super.system}.default;
     pastel = inputs.pastel.packages.${super.system}.default;
+    agenix = inputs.agenix.packages.${super.system}.default;
   };
 
   modifications = self: super: {
