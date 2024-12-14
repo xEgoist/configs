@@ -1,3 +1,0 @@
-CompileFlags:
-  Add: [-std=c2x, -Wall, -Werror, -Wconversion]
-  CompilationDatabase: builddir/

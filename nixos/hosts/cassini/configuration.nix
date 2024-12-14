@@ -1,20 +1,25 @@
 {
-  inputs,
   config,
   lib,
   pkgs,
   ...
-}: {
+}:
+{
+  # disabledModules = [ "services/web-apps/invidious.nix" ];
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
+  ];
+  nixpkgs.overlays = [
+    outputs.overlays.unstable
+    outputs.overlays.custom
   ];
 
   # Use the systemd-boot EFI boot loader.
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.supportedFilesystems = ["bcachefs"];
+  boot.supportedFilesystems = [ "bcachefs" ];
   # networking.dhcpcd.extraConfig = "nohook resolv.conf";
 
   networking.hostName = "cassini";
@@ -100,22 +105,37 @@
     };
   };
   services.invidious = {
+    # package = pkgs.unstable.invidious.override({
+    #   versions = {
+    #     invidious = {
+    #       hash = "sha256-oNkEFATRVgPC8Bhp0v04an3LvqgsSEjLZdeblb7n8TI=";
+    #       version = "2.20240825.2";
+    #       date = "2024.08.26";
+    #       commit = "a021b93063f3956fc9bb3cce0fb56ea252422738";
+    #     };
+    #     videojs = {
+    #       hash = "sha256-jED3zsDkPN8i6GhBBJwnsHujbuwlHdsVpVqa1/pzSH4=";
+    #     };
+    #   };
+    # }));
     package = pkgs.unstable.invidious;
     enable = true;
+    sig-helper.enable = true;
+    sig-helper.package = pkgs.unstable.inv-sig-helper;
     domain = "yt.cassini.internal";
     nginx.enable = true;
     settings.db.user = "invidious";
     settings.db.dbname = "invidious";
+    settings.po_token = "MnQIodLLk0fi1AiZ5ZKZgLHZR5DP4P6-99tiBek4eVfm3UW4kz7gqkFbIjGehDiDgwXfGNiBl1SnMjhejcKHmN5J--pEIjFNTAhVZyhuiX9M2HAhiik6ZaGF2IC-aG8qRuQBCduKjlWogsTC17aKPUsPaja9bQ==";
+    settings.visitor_data = "CgthcDdrdHhFVlNvNCiglJ26BjIKCgJVUxIEGgAgVA%3D%3D";
   };
 
-  systemd.services.pastel = let
-    pastel = inputs.pastel.packages.${pkgs.system}.default;
-  in {
-    wantedBy = ["multi-user.target"];
-    after = ["network.target"];
+  systemd.services.pastel = {
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network.target" ];
     description = "pastebin alternative";
     serviceConfig = {
-      ExecStart = "${pastel}/bin/pastel";
+      ExecStart = "${pkgs.pastel}/bin/pastel";
       StateDirectory = "pastel";
     };
   };
@@ -123,7 +143,7 @@
   users.users.cassini = {
     isNormalUser = true;
     shell = pkgs.fish;
-    extraGroups = ["wheel"];
+    extraGroups = [ "wheel" ];
     packages = with pkgs; [
       zellij
       fzf
@@ -152,8 +172,18 @@
   ];
 
   # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [22 80 443 6697];
-  networking.firewall.allowedUDPPorts = [22 80 443 6697];
+  networking.firewall.allowedTCPPorts = [
+    22
+    80
+    443
+    6697
+  ];
+  networking.firewall.allowedUDPPorts = [
+    22
+    80
+    443
+    6697
+  ];
   # Or disable the firewall altogether.
   networking.firewall.enable = true;
 

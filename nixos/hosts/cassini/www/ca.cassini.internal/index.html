@@ -3,24 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Download CA Certificate</title>
-    <link rel="stylesheet" href="https://matcha.mizu.sh/matcha.css">
+    <title>Saturn Certificate Authority</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #e74c3c;
+            --text-color: #ecf0f1;
+            --spacing-unit: clamp(1rem, 2vw, 2rem);
+        }
+
+        @property --angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--primary-color);
+            color: var(--text-color);
+            display: grid;
+            place-items: center;
+            padding: var(--spacing-unit);
+        }
+
+        .container {
+            container-type: inline-size;
+            width: min(90%, 600px);
+        }
+
+        .cert-panel {
+            background: var(--secondary-color);
+            border-radius: 1rem;
+            padding: calc(var(--spacing-unit) * 2);
+            box-shadow: 
+                0 10px 20px rgba(0,0,0,0.2),
+                0 0 0 1px rgba(255,255,255,0.1);
+            display: grid;
+            gap: var(--spacing-unit);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(1.5rem, 5cqi, 3rem);
+            background: linear-gradient(
+                var(--angle),
+                var(--accent-color),
+                var(--text-color)
+            );
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-align: center;
+            animation: rotate-gradient 5s linear infinite;
+        }
+
+        .buttons {
+            display: grid;
+            gap: var(--spacing-unit);
+        }
+
+        @container (min-width: 400px) {
+            .buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .download-link {
+            display: inline-block;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: var(--accent-color);
+            color: var(--text-color);
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease;
+        }
+
+        .download-link::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.5s ease;
+        }
+
+        .download-link:hover {
+            transform: translateY(-2px);
+        }
+
+        .download-link:hover::before {
+            transform: translateX(100%);
+        }
+
+        .download-link:active {
+            transform: translateY(0);
+        }
+
+        @keyframes rotate-gradient {
+            from { --angle: 0deg; }
+            to { --angle: 360deg; }
+        }
+
+        .info {
+            text-align: center;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+    </style>
 </head>
 <body>
-    <main>
-        <section>
-            <header>
-                <h1>Download CA Certificate</h1>
-            </header>
-            <p>Click the button below to download the CA certificate.</p>
-            <a href="saturnChain.crt" download="saturnChain.crt">
-                <button class="variant">Download CA Certificate</button>
-            </a>
-            <a href="rootCA.crt" download="rootCA.crt">
-                <button class="variant">Download ROOT CA Certificate</button>
-            </a>
-        </section>
+    <main class="container">
+        <div class="cert-panel">
+            <h1>Saturn CA</h1>
+            <p class="info">Download certificates for the Saturn Certificate Authority</p>
+            <div class="buttons">
+                <a href="/rootCA.crt" class="download-link" download="saturn-root-ca.crt">Root CA</a>
+                <a href="/saturnChain.crt" class="download-link" download="saturn-chain.crt">Chain Cert</a>
+            </div>
+        </div>
     </main>
 </body>
 </html>
-

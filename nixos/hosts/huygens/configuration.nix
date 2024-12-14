@@ -6,7 +6,8 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+{
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
@@ -16,7 +17,7 @@
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.supportedFilesystems = ["bcachefs"];
+  boot.supportedFilesystems = [ "bcachefs" ];
 
   fileSystems."/persist" = {
     device = "UUID=066511c4-76fc-49fa-b71e-a411377877a4";
@@ -27,7 +28,7 @@
   fileSystems."/export" = {
     device = "/persist";
     fsType = "none";
-    options = ["bind"];
+    options = [ "bind" ];
   };
 
   services.nfs.server.enable = true;
@@ -65,9 +66,45 @@
   services.gonic = {
     enable = true;
     settings = {
-      playlists-path = ["/persist/music/playlists"];
-      podcast-path = ["/persist/music/podcasts"];
-      music-path = ["/persist/music"];
+      playlists-path = [ "/persist/music/playlists" ];
+      podcast-path = [ "/persist/music/podcasts" ];
+      music-path = [ "/persist/music" ];
+    };
+  };
+
+  services.atticd = {
+    enable = true;
+
+    # Replace with absolute path to your environment file
+    environmentFile = "/etc/attic.env";
+
+    settings = {
+      listen = "[::]:8080";
+
+      jwt = { };
+
+      # Data chunking
+      #
+      # Warning: If you change any of the values here, it will be
+      # difficult to reuse existing chunks for newly-uploaded NARs
+      # since the cutpoints will be different. As a result, the
+      # deduplication ratio will suffer for a while after the change.
+      chunking = {
+        # The minimum NAR size to trigger chunking
+        #
+        # If 0, chunking is disabled entirely for newly-uploaded NARs.
+        # If 1, all NARs are chunked.
+        nar-size-threshold = 64 * 1024; # 64 KiB
+
+        # The preferred minimum size of a chunk, in bytes
+        min-size = 16 * 1024; # 16 KiB
+
+        # The preferred average size of a chunk, in bytes
+        avg-size = 64 * 1024; # 64 KiB
+
+        # The preferred maximum size of a chunk, in bytes
+        max-size = 256 * 1024; # 256 KiB
+      };
     };
   };
 
@@ -81,6 +118,7 @@
     sslProtocols = "TLSv1.3";
     sslCiphers = null;
     proxyTimeout = "600s";
+
     virtualHosts."gonic.huygens.internal" = {
       locations."/".proxyPass = "http://127.0.0.1:4747";
       enableACME = false;
@@ -89,6 +127,19 @@
       sslCertificate = ./certs/huygens.internal.crt;
       sslCertificateKey = ./certs/huygens.internal.key;
     };
+
+    virtualHosts."cache.huygens.internal" = {
+      locations."/".proxyPass = "http://${config.services.atticd.settings.listen}";
+      enableACME = false;
+      forceSSL = true;
+      kTLS = true;
+      sslCertificate = ./certs/huygens.internal.crt;
+      sslCertificateKey = ./certs/huygens.internal.key;
+      extraConfig = ''
+        client_max_body_size 2048M;
+      '';
+    };
+
   };
 
   networking.hostName = "huygens";
@@ -101,7 +152,7 @@
   users.users.huygens = {
     isNormalUser = true;
     shell = pkgs.fish;
-    extraGroups = ["wheel"];
+    extraGroups = [ "wheel" ];
     packages = with pkgs; [
       zellij
       fzf
@@ -130,8 +181,16 @@
   ];
 
   # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [22 443 20490];
-  networking.firewall.allowedUDPPorts = [22 443 20490];
+  networking.firewall.allowedTCPPorts = [
+    22
+    443
+    20490
+  ];
+  networking.firewall.allowedUDPPorts = [
+    22
+    443
+    20490
+  ];
   # Or disable the firewall altogether.
   networking.firewall.enable = true;
 

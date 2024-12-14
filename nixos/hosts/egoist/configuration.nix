@@ -7,16 +7,23 @@
   config,
   pkgs,
   ...
-}: {
+}:
+{
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
   ];
 
+  nixpkgs.overlays = [
+    outputs.overlays.unstable
+    outputs.overlays.custom
+    outputs.overlays.modifications
+  ];
+
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.supportedFilesystems = ["ntfs"];
+  boot.supportedFilesystems = [ "ntfs" ];
 
   networking.hostName = "Egoist"; # Define your hostname.
 
@@ -27,7 +34,7 @@
   # We use dhcpcd here. no network manager BS.
   # networking.dhcpcd.extraConfig = "nohook resolv.conf";
   nixpkgs.config.allowUnfree = true;
-  boot.initrd.kernelModules = ["amdgpu"];
+  boot.initrd.kernelModules = [ "amdgpu" ];
 
   # # SWITCH
   # networking.interfaces.enp4s0.ipv4.addresses = [
@@ -41,8 +48,6 @@
     nfs = {
       connect = "10.0.1.3:20490";
       accept = "127.0.0.1:2049";
-      # cert = "/home/egoist/configs/etc/nixos/hosts/egoist/certs/titan.internal.crt";
-      # key = "/home/egoist/configs/etc/nixos/hosts/egoist/certs/titan.internal.key";
       cert = "${./certs/titan.internal.crt}";
       key = "${./certs/titan.internal.key}";
       CAfile = "/etc/ssl/certs/ca-bundle.crt";
@@ -58,7 +63,15 @@
   fileSystems."/mnt/music" = {
     device = "127.0.0.1:/music";
     fsType = "nfs";
-    options = ["noatime" "nfsvers=4.2" "rsize=1048576" "wsize=1048576" "soft" "bg" "x-systemd.requires=stunnel.service"];
+    options = [
+      "noatime"
+      "nfsvers=4.2"
+      "rsize=1048576"
+      "wsize=1048576"
+      "soft"
+      "bg"
+      "x-systemd.requires=stunnel.service"
+    ];
     # options = [ "noauto" "proto=tcp" "nfsvers=4.2" ];
   };
 
@@ -72,7 +85,31 @@
   fileSystems."/mnt/torrent" = {
     device = "127.0.0.1:/torrent";
     fsType = "nfs";
-    options = ["rw" "noatime" "nfsvers=4.2" "rsize=1048576" "wsize=1048576" "soft" "bg" "x-systemd.requires=stunnel.service"];
+    options = [
+      "rw"
+      "noatime"
+      "nfsvers=4.2"
+      "rsize=1048576"
+      "wsize=1048576"
+      "soft"
+      "bg"
+      "x-systemd.requires=stunnel.service"
+    ];
+  };
+
+  fileSystems."/mnt/games" = {
+    device = "127.0.0.1:/games";
+    fsType = "nfs";
+    options = [
+      "rw"
+      "noatime"
+      "nfsvers=4.2"
+      "rsize=1048576"
+      "wsize=1048576"
+      "soft"
+      "bg"
+      "x-systemd.requires=stunnel.service"
+    ];
   };
 
   security.rtkit.enable = true;
@@ -98,7 +135,7 @@
     "low-latency-clock" = {
       context.properties = {
         default.clock.rate = 384000;
-        default.clock.allowed-rates = [384000];
+        default.clock.allowed-rates = [ 384000 ];
         # Low Latency (If buggy, comment out)
         default.clock.quantum = 32;
         default.clock.min-quantum = 32;
@@ -108,18 +145,11 @@
     };
   };
 
-  hardware.opengl.extraPackages = with pkgs; [
-    rocm-opencl-icd
-    rocm-opencl-runtime
+  hardware.graphics.extraPackages = with pkgs; [
+    rocmPackages.clr.icd
   ];
-  # Vulkan
-  hardware.opengl.driSupport = true;
-  # For 32 bit applications
-  hardware.opengl.driSupport32Bit = true;
 
   # Turn on nix flakes (TODO: Remove once it's no longer experimental)
-  environment.pathsToLink = ["/share/nix-direnv"];
-
   environment.variables.EDITOR = "hx";
 
   # Firefox
@@ -173,15 +203,24 @@
   users.users.egoist = {
     shell = pkgs.unstable.fish;
     isNormalUser = true;
-    extraGroups = ["wheel" "libvirtd" "docker"];
+    extraGroups = [
+      "wheel"
+      "libvirtd"
+      "docker"
+    ];
     packages = with pkgs; [
+      unstable.blender-hip
       bfs
       brave
       emacs29
-      unstable.factorio
-      fzy
+      # TODO: transform factorio into (callPackage ../pkgs/factorio.nix) so that we can easily use api key
+      # TODO: Make a custom factorio derivation so we don't have to deal with nixpkgs being outdated.
+      # TODO: Use agenix for api key
+      # TODO: Should i even bother or just use steam's version?
+      # unstable.factorio
+      fzf
       gpgme
-      inputs.matcha.packages.${system}.default
+      matcha
       irssi
       krita
       libnotify
@@ -190,9 +229,7 @@
       ncmpc
       neomutt
       obs-studio
-      qbittorrent
-      streamlink
-      streamlink-twitch-gui-bin
+      unstable.qbittorrent
       tealdeer
       unstable.jujutsu
       unstable.zellij
@@ -200,44 +237,50 @@
       urlscan
       w3m
       xdg-utils
+      gamemode
+      (mullvad-browser.override {
+        extraPrefs = ''
+          pref("media.getusermedia.aec_enabled", false);
+          pref("media.getusermedia.agc_enabled", false);
+          pref("media.getusermedia.noise_enabled", false);
+          pref("media.getusermedia.hpf_enabled", false);
+        '';
+      })
     ];
   };
 
   programs.sway = {
     enable = true;
+    package = pkgs.sway;
     wrapperFeatures.gtk = true;
     extraPackages = with pkgs; [
       acpi
       btop
       dex
-      gnome.adwaita-icon-theme
+      adwaita-icon-theme
       grim
       gtk-layer-shell
       jq
       mako
       mpd
-      mpd-discord-rpc
-      discord
+      unstable.mpd-discord-rpc
+      vesktop
       polkit_gnome
       screen
       slurp
       swaybg
-      sway-contrib.grimshot
       swayidle
       swayimg
       swaylock
       sysstat
-      unstable.egl-wayland
+      egl-wayland
       unstable.foot
       unstable.imhex
-      unstable.vscode
-      # unstable.wayland-protocols
       wf-recorder
       wget
       wl-clipboard
       bemenu
-      wofi
-      (enableDebugging unstable.yambar)
+      yambar
     ];
     extraSessionCommands = "";
   };
@@ -248,7 +291,7 @@
     portal = {
       enable = true;
       wlr.enable = true;
-      extraPortals = with pkgs; [xdg-desktop-portal-kde];
+      extraPortals = with pkgs; [ xdg-desktop-portal-kde ];
     };
   };
 
@@ -275,6 +318,7 @@
     _JAVA_AWT_WM_NONREPARENTING = "1";
     ## xdg session
     # XDG_SESSION_TYPE = "wayland";
+    # TODO: ENABLE ME
     XDG_SESSION_DESKTOP = "sway";
     XDG_CURRENT_DESKTOP = "sway";
     BEMENU_BACKEND = "wayland";
@@ -286,29 +330,35 @@
 
   fonts.packages = with pkgs; [
     (nerdfonts.override {
-      fonts = ["IBMPlexMono" "UbuntuMono" "Ubuntu" "VictorMono"];
+      fonts = [
+        "IBMPlexMono"
+        "UbuntuMono"
+        "Ubuntu"
+        "VictorMono"
+      ];
     })
     noto-fonts
     twitter-color-emoji
-    noto-fonts-cjk
+    noto-fonts-cjk-sans
     font-awesome
   ];
 
-  fonts.fontconfig = {defaultFonts = {emoji = ["Twitter Color Emoji"];};};
+  fonts.fontconfig = {
+    defaultFonts = {
+      emoji = [ "Twitter Color Emoji" ];
+    };
+  };
 
   programs.steam = {
     enable = true;
-    remotePlay.openFirewall =
-      true; # Open ports in the firewall for Steam Remote Play
-    dedicatedServer.openFirewall =
-      true; # Open ports in the firewall for Source Dedicated Server
+    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
   };
-
-  # services.xserver.libinput.enable = true;
 
   # system wide installed packages:
   environment.systemPackages = with pkgs; [
     # pinentry-qt
+    attic-client
     # Android Device Support (Helpful for mount)
     android-udev-rules
     # libsForQt5.kio-extras
@@ -318,11 +368,12 @@
     sshfs
     virt-manager
     virtiofsd
+    clinfo
   ];
 
   # yubikey to enable ssh key
 
-  services.udev.packages = [pkgs.yubikey-personalization];
+  services.udev.packages = [ pkgs.yubikey-personalization ];
   programs.gnupg.agent = {
     enable = true;
     pinentryPackage = pkgs.unstable.pinentry-bemenu;
@@ -334,7 +385,7 @@
 
   # enable libvirtd
   virtualisation.libvirtd.enable = true;
-  virtualisation.docker.enable = true;
+  # virtualisation.docker.enable = true;
   programs.dconf.enable = true;
 
   # programs.mtr.enable = true;
@@ -342,8 +393,8 @@
   # Open ports in the firewall.
 
   #  networking.firewall.allowedTCPPorts = [ ];
-  networking.firewall.interfaces."virbr1".allowedTCPPorts = [42069];
-  networking.firewall.interfaces."tun0".allowedTCPPorts = [42069];
+  networking.firewall.interfaces."virbr1".allowedTCPPorts = [ 42069 ];
+  networking.firewall.interfaces."tun0".allowedTCPPorts = [ 42069 ];
 
   # In case I decide I need to bride my adapter for VMs (bad idea currently)
   # networking = {
@@ -377,12 +428,12 @@
   #    };
   #  };
 
-  services.openvpn.servers = {
-    htb = {
-      config = "config /home/egoist/Downloads/lab_xEgoist.ovpn ";
-      autoStart = false;
-    };
-  };
+  # services.openvpn.servers = {
+  #   htb = {
+  #     config = "config /home/egoist/Downloads/lab_xEgoist.ovpn ";
+  #     autoStart = false;
+  #   };
+  # };
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you

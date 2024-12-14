@@ -1,17 +1,24 @@
-{inputs, ...}: {
-  # additions = final: _prev: import ../pkgs final.pkgs;
+{ inputs, ... }:
+{
+  # additions = self: super: import ../pkgs final.pkgs;
 
-  modifications = final: prev: {
-    # example = prev.example.overrideAttrs (oldAttrs: rec {
-    # ...
-    # });
+  custom = _self: super: {
+    matcha = inputs.matcha.packages.${super.system}.default;
+    pastel = inputs.pastel.packages.${super.system}.default;
   };
 
-  # When applied, the unstable nixpkgs set (declared in the flake inputs) will
-  # be accessible through 'pkgs.unstable'
-  unstable = final: _prev: {
+  modifications = self: super: {
+    yambar = super.unstable.yambar.overrideAttrs (oldAttrs: {
+      src = oldAttrs.src.override {
+        rev = "3e0083c9f21a276840e3487a0a6a85c71e185b4d";
+        hash = "sha256-Q+pRFzPuN/uTvQ8XriGrjsj3rogPJPxy3Dx6OzSt2hc=";
+      };
+    });
+  };
+
+  unstable = self: _super: {
     unstable = import inputs.unstable {
-      system = final.system;
+      system = self.system;
       config.allowUnfree = true;
     };
   };
