@@ -4,7 +4,13 @@ let
   titan = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDvMwIhpQO6mAVEPBx086dCM/rwi55sNftXq64Ehn552 titan";
 in
 {
-  "secrets/cassini.internal.key.age".publicKeys = [ titan cassini ];
-  "secrets/huygens.internal.key.age".publicKeys = [ titan huygens ];
+  "secrets/cassini.internal.key.age".publicKeys = [
+    titan
+    cassini
+  ];
+  "secrets/huygens.internal.key.age".publicKeys = [
+    titan
+    huygens
+  ];
   "secrets/titan.internal.key.age".publicKeys = [ titan ];
 }

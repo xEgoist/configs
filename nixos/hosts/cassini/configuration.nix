@@ -1,5 +1,5 @@
 {
-  inputs,
+  outputs,
   config,
   lib,
   pkgs,
@@ -25,13 +25,20 @@
 
   networking.hostName = "cassini";
   # AgeNix
-  age.secrets.cassiniNginx = {
-    file = ../../secrets/cassini.internal.key.age;
-    owner = "nginx";
-    group = "nginx";
-    mode = "0400";
+  age.secrets = {
+    cassiniNginx = {
+      file = ../../secrets/cassini.internal.key.age;
+      owner = "nginx";
+      group = "nginx";
+      mode = "0400";
+    };
+    cassiniSoju = {
+      file = ../../secrets/cassini.internal.key.age;
+      owner = "root";
+      group = "root";
+      mode = "0440";
+    };
   };
-
 
   # environment.enableDebugInfo = true;
 
@@ -47,7 +54,7 @@
     enable = true;
     enableMessageLogging = true;
     hostName = "irc.cassini.internal";
-    tlsCertificateKey = ./certs/cassini.internal.key;
+    tlsCertificateKey = config.age.secrets.cassiniSoju.path;
     tlsCertificate = ./certs/cassini.internal.crt;
   };
 
