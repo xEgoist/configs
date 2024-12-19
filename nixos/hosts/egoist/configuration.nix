@@ -1,6 +1,3 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
 {
   inputs,
   outputs,
@@ -10,7 +7,6 @@
 }:
 {
   imports = [
-    # Include the results of the hardware scan.
     ./hardware-configuration.nix
   ];
 
@@ -25,8 +21,7 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.supportedFilesystems = [ "ntfs" ];
 
-  networking.hostName = "Egoist"; # Define your hostname.
-
+  networking.hostName = "Egoist";
   # networking.nameservers = [ "1.1.1.1" ];
 
   networking.extraHosts = "";
@@ -157,7 +152,6 @@
     rocmPackages.clr.icd
   ];
 
-  # Turn on nix flakes (TODO: Remove once it's no longer experimental)
   environment.variables.EDITOR = "hx";
 
   # Firefox
