@@ -24,7 +24,7 @@
   networking.hostName = "Egoist";
   # networking.nameservers = [ "1.1.1.1" ];
 
-  networking.extraHosts = "";
+  # networking.extraHosts = "";
 
   # We use dhcpcd here. no network manager BS.
   # networking.dhcpcd.extraConfig = "nohook resolv.conf";
@@ -232,7 +232,6 @@
       neomutt
       obs-studio
       unstable.qbittorrent
-      tealdeer
       unstable.jujutsu
       unstable.zellij
       unzip
@@ -240,14 +239,7 @@
       w3m
       xdg-utils
       gamemode
-      (mullvad-browser.override {
-        extraPrefs = ''
-          pref("media.getusermedia.aec_enabled", false);
-          pref("media.getusermedia.agc_enabled", false);
-          pref("media.getusermedia.noise_enabled", false);
-          pref("media.getusermedia.hpf_enabled", false);
-        '';
-      })
+      mullvad-browser
     ];
   };
 
@@ -256,12 +248,9 @@
     package = pkgs.sway;
     wrapperFeatures.gtk = true;
     extraPackages = with pkgs; [
-      acpi
       btop
-      # dex
       adwaita-icon-theme
       grim
-      # gtk-layer-shell
       jq
       mako
       mpd
