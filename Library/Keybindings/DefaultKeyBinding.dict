@@ -1,0 +1,9 @@
+{
+  "^\UF702"  = moveWordLeft:;
+  "^\UF703"  = moveWordRight:;
+  "@\U007F"  = "deleteWordBackward:";
+  "@\UF728"  = "deleteWordForward:";
+  "^\U007F"  = "deleteWordBackward:";
+  "^\UF728"  = "deleteWordForward:";
+   "^a"      = "selectAll:"; 
+}
