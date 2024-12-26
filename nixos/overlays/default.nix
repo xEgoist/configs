@@ -26,26 +26,29 @@
       '';
     };
 
-    mullvad-browser = self._mullvad-browser.overrideAttrs(me: _oldAttrs: {
-      policiesJson = super.writeText "policies.json" (
-        builtins.toJSON {
-          policies = {
-            DisableAppUpdate = true;
-            Extensions.Install = [
-              # bitwarden
-              # "https://addons.mozilla.org/firefox/downloads/latest/735894/latest.xpi"
-              # Proton Pass
-              "https://addons.mozilla.org/firefox/downloads/latest/2785662/latest.xpi"
-              # kagi
-              "https://addons.mozilla.org/firefox/downloads/latest/2749605/latest.xpi"
-            ];
-            Certificates.ImportEnterpriseRoots = true;
-          };
-        });
-      postInstall = ''
-        install -Dvm644 ${me.policiesJson} $out/share/mullvad-browser/distribution/policies.json
-      '';
-    });
+    mullvad-browser = self._mullvad-browser.overrideAttrs (
+      me: _oldAttrs: {
+        policiesJson = super.writeText "policies.json" (
+          builtins.toJSON {
+            policies = {
+              DisableAppUpdate = true;
+              Extensions.Install = [
+                # bitwarden
+                # "https://addons.mozilla.org/firefox/downloads/latest/735894/latest.xpi"
+                # Proton Pass
+                "https://addons.mozilla.org/firefox/downloads/latest/2785662/latest.xpi"
+                # kagi
+                "https://addons.mozilla.org/firefox/downloads/latest/2749605/latest.xpi"
+              ];
+              Certificates.ImportEnterpriseRoots = true;
+            };
+          }
+        );
+        postInstall = ''
+          install -Dvm644 ${me.policiesJson} $out/share/mullvad-browser/distribution/policies.json
+        '';
+      }
+    );
   };
 
   unstable = self: _super: {

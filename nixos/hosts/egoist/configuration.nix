@@ -222,6 +222,7 @@
       # unstable.factorio
       fzf
       gpgme
+      heroic
       matcha
       irssi
       krita
@@ -352,7 +353,6 @@
     attic-client
     # Android Device Support (Helpful for mount)
     android-udev-rules
-    # libsForQt5.kio-extras
     git-crypt
     direnv
     nix-direnv
@@ -360,6 +360,9 @@
     virt-manager
     virtiofsd
     clinfo
+    # file chooser image preview
+    libsForQt5.qt5.qtimageformats
+    libsForQt5.kio-extras
   ];
 
   # yubikey to enable ssh key
