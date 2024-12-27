@@ -15,6 +15,7 @@
     outputs.overlays.custom
     outputs.overlays.modifications
   ];
+  powerManagement.cpuFreqGovernor = "performance";
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -76,6 +77,11 @@
       "x-systemd.requires=stunnel.service"
     ];
     # options = [ "noauto" "proto=tcp" "nfsvers=4.2" ];
+  };
+
+  fileSystems."/mnt/local_games" = {
+    device = "/dev/disk/by-uuid/ff5c5135-1fba-4c8b-b8cf-4b917e13afbc";
+    fsType = "ext4";
   };
 
   # fileSystems."/mnt/torrent" = {
