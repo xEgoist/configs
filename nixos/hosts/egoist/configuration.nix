@@ -136,7 +136,7 @@
     # Otherwise if nothing works, pulse may be enabled here.
 
     # 2023-12-27: Baldur's Gate 3 Seems to want pulse :(
-    pulse.enable = true;
+    # pulse.enable = true;
     # jack.enable = true;
   };
   environment.enableDebugInfo = true;
@@ -165,7 +165,7 @@
   programs.firefox = {
     enable = true;
     preferences = {
-      "browser.tabs.inTitlebar" = 0;
+      # "browser.tabs.inTitlebar" = 1;
       # FUCK GTK File Chooser, use KDE from extraPortals
       "widget.use-xdg-desktop-portal.file-picker" = 1;
       # Sync with https://github.com/K3V1991/Disable-Firefox-Telemetry-and-Data-Collection/blob/main/README.md
@@ -215,6 +215,7 @@
       "wheel"
       "libvirtd"
       "docker"
+      "gamemode"
     ];
     packages = with pkgs; [
       unstable.blender-hip
@@ -246,14 +247,10 @@
       w3m
       xdg-utils
       mullvad-browser
-    ];
-  };
 
-  programs.sway = {
-    enable = true;
-    package = pkgs.sway;
-    wrapperFeatures.gtk = true;
-    extraPackages = with pkgs; [
+
+      # NIRI stuff
+      swaybg
       btop
       adwaita-icon-theme
       grim
@@ -270,7 +267,6 @@
       swayimg
       swaylock
       sysstat
-      egl-wayland
       unstable.foot
       unstable.imhex
       wf-recorder
@@ -278,17 +274,65 @@
       wl-clipboard
       bemenu
       yambar
+      unstable.egl-wayland
+      unstable.xwayland-satellite
     ];
-    extraSessionCommands = "";
   };
+  programs.niri.enable = true;
+  programs.niri.package = pkgs.unstable.niri;
+  programs.gamescope.enable = true;
+  programs.gamescope.args = [
+    "-rt"
+    "-f"
+    "-W 5120"
+    "-H 2880"
+  ];
+  programs.gamescope.package = pkgs.unstable.gamescope;
+  # programs.gamescope.capSysNice = true;
+  # programs.sway = {
+  #   enable = true;
+  #   package = pkgs.sway;
+  #   wrapperFeatures.gtk = true;
+  #   extraPackages = with pkgs; [
+  #     btop
+  #     adwaita-icon-theme
+  #     grim
+  #     jq
+  #     mako
+  #     mpd
+  #     unstable.mpd-discord-rpc
+  #     vesktop
+  #     polkit_gnome
+  #     screen
+  #     slurp
+  #     swaybg
+  #     swayidle
+  #     swayimg
+  #     swaylock
+  #     sysstat
+  #     egl-wayland
+  #     unstable.foot
+  #     unstable.imhex
+  #     wf-recorder
+  #     wget
+  #     wl-clipboard
+  #     bemenu
+  #     yambar
+  #   ];
+  #   extraSessionCommands = "";
+  # };
+
   services.blueman.enable = true;
   hardware.bluetooth.enable = true;
   services.dbus.enable = true;
   xdg = {
     portal = {
       enable = true;
-      wlr.enable = true;
-      extraPortals = with pkgs; [ xdg-desktop-portal-kde ];
+      # wlr.enable = true;
+      extraPortals = with pkgs; [
+        xdg-desktop-portal-gnome
+        xdg-desktop-portal-kde
+      ];
     };
   };
 
@@ -351,6 +395,14 @@
     dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
   };
   programs.gamemode.enable = true;
+  programs.gamemode.enableRenice = false;
+  programs.gamemode.settings = {
+    gpu = {
+      apply_gpu_optimisations = "accept-responsibility";
+      gpu_device = 1;
+      amd_performance_level = "high";
+    };
+  };
 
   # system wide installed packages:
   environment.systemPackages = with pkgs; [
