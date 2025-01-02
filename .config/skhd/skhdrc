@@ -1,15 +1,26 @@
-cmd - return : /Applications/WezTerm.app/Contents/MacOS/wezterm
-cmd - o : open -a Safari
+# cmd - return : /Applications/Alacritty.app/Contents/MacOS/alacritty msg create-window || /Applications/Alacritty.app/Contents/MacOS/alacritty
+# cmd - return : /Applications/Wezterm.app/Contents/MacOS/wezterm start
+cmd - return : open -na /Applications/Wezterm.app
+cmd - o : open -na "Brave Browser"
+# cmd - o : open -a "Safari"
 cmd - q : ~/.config/skhd/closewindow.sh
 
 # cmd - d : skhd -k "cmd - space"
 
-cmd - d: fd -td -eapp . /Applications /Applications/Utilities /System/Applications /System/Applications/Utilities \
---format '{/.}' | choose | xargs -I {} open -a "{}.app"
+# cmd - d: fd -td -eapp . /Applications /Applications/Utilities /System/Applications /System/Applications/Utilities \
+# 	--format '{/.}' | choose | xargs -I {} open -a "{}.app"
+
+cmd - d: /Applications/Alacritty.app/Contents/MacOS/alacritty -e fish -c qmenu
+
+cmd - p: mpc --host ~/.config/mpd/socket toggle
+cmd - n: mpc --host ~/.config/mpd/socket next
+cmd + shift - p: mpc --host ~/.config/mpd/socket prev
 
 
-cmd + shift - s: ~/.config/skhd/switchapp.sh
-cmd + shift - k: ~/.config/skhd/killapp.sh
+# cmd + shift - s: ~/.config/skhd/switchapp.sh
+# cmd + shift - k: ~/.config/skhd/killapp.sh
+cmd + shift - k: /Applications/Alacritty.app/Contents/MacOS/alacritty -e fish -c kmenu
+cmd + shift - s: /Applications/Alacritty.app/Contents/MacOS/alacritty -e fish -c smenu
 
 
 
@@ -48,3 +59,8 @@ cmd + shift - 8 : ~/.config/skhd/spaces.sh 8 move
 cmd + shift - 9 : ~/.config/skhd/spaces.sh 9 move
 cmd + shift - 0 : ~/.config/skhd/spaces.sh 10 move
 
+
+ctrl - left : skhd -k "alt - left"
+ctrl - right : skhd -k "alt - right"
+ctrl - up: skhd -k "alt - up"
+ctrl - down: skhd -k "alt - down"
