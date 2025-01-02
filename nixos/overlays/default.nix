@@ -2,11 +2,16 @@
 {
   # additions = self: super: import ../pkgs final.pkgs;
 
-  custom = _self: super: {
-    matcha = inputs.matcha.packages.${super.system}.default;
-    pastel = inputs.pastel.packages.${super.system}.default;
-    agenix = inputs.agenix.packages.${super.system}.default;
-  };
+  custom =
+    _self: super:
+    let
+      importCustomPackage = pkg: inputs.${pkg}.packages.${super.system}.default;
+    in
+    {
+      matcha = importCustomPackage "matcha";
+      pastel = importCustomPackage "pastel";
+      agenix = importCustomPackage "agenix";
+    };
 
   modifications = self: super: {
     yambar = super.unstable.yambar.overrideAttrs (oldAttrs: {

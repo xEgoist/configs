@@ -207,7 +207,14 @@
     };
   };
 
-  # Fucking sudo man
+  # set the default terminal
+  xdg.terminal-exec = {
+    settings.niri = [
+      "foot.desktop"
+    ];
+    enable = true;
+  };
+
   users.users.egoist = {
     shell = pkgs.unstable.fish;
     isNormalUser = true;
@@ -247,7 +254,7 @@
       w3m
       xdg-utils
       mullvad-browser
-
+      librewolf
 
       # NIRI stuff
       swaybg
@@ -255,7 +262,7 @@
       adwaita-icon-theme
       grim
       jq
-      mako
+      fnott
       mpd
       unstable.mpd-discord-rpc
       vesktop
@@ -272,7 +279,8 @@
       wf-recorder
       wget
       wl-clipboard
-      bemenu
+      # bemenu
+      fuzzel
       yambar
       unstable.egl-wayland
       unstable.xwayland-satellite
@@ -281,6 +289,7 @@
   programs.niri.enable = true;
   programs.niri.package = pkgs.unstable.niri;
   programs.gamescope.enable = true;
+  programs.gamescope.capSysNice = true;
   programs.gamescope.args = [
     "-rt"
     "-f"
@@ -288,42 +297,14 @@
     "-H 2880"
   ];
   programs.gamescope.package = pkgs.unstable.gamescope;
-  # programs.gamescope.capSysNice = true;
-  # programs.sway = {
-  #   enable = true;
-  #   package = pkgs.sway;
-  #   wrapperFeatures.gtk = true;
-  #   extraPackages = with pkgs; [
-  #     btop
-  #     adwaita-icon-theme
-  #     grim
-  #     jq
-  #     mako
-  #     mpd
-  #     unstable.mpd-discord-rpc
-  #     vesktop
-  #     polkit_gnome
-  #     screen
-  #     slurp
-  #     swaybg
-  #     swayidle
-  #     swayimg
-  #     swaylock
-  #     sysstat
-  #     egl-wayland
-  #     unstable.foot
-  #     unstable.imhex
-  #     wf-recorder
-  #     wget
-  #     wl-clipboard
-  #     bemenu
-  #     yambar
-  #   ];
-  #   extraSessionCommands = "";
-  # };
-
   services.blueman.enable = true;
   hardware.bluetooth.enable = true;
+  hardware.bluetooth.input = {
+    General = {
+      UserspaceHID = false;
+      ClassicBondedOnly = false;
+    };
+  };
   services.dbus.enable = true;
   xdg = {
     portal = {
@@ -339,7 +320,7 @@
   qt = {
     enable = true;
     platformTheme = "qt5ct";
-    style = "adwaita-dark";
+    # style = "adwaita-dark";
   };
 
   environment.sessionVariables = rec {
@@ -358,9 +339,6 @@
     ## java is bad
     _JAVA_AWT_WM_NONREPARENTING = "1";
     ## xdg session
-    # XDG_SESSION_TYPE = "wayland";
-    XDG_SESSION_DESKTOP = "sway";
-    XDG_CURRENT_DESKTOP = "sway";
     BEMENU_BACKEND = "wayland";
     BEMENU_SCALE = "2.5";
     QT_SCALE_FACTOR = "1.5";
@@ -393,9 +371,10 @@
     enable = true;
     remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
     dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+    gamescopeSession.enable = true;
   };
   programs.gamemode.enable = true;
-  programs.gamemode.enableRenice = false;
+  # programs.gamemode.enableRenice = true;
   programs.gamemode.settings = {
     gpu = {
       apply_gpu_optimisations = "accept-responsibility";
@@ -411,16 +390,13 @@
     attic-client
     # Android Device Support (Helpful for mount)
     android-udev-rules
-    git-crypt
-    direnv
-    nix-direnv
-    sshfs
     virt-manager
     virtiofsd
     clinfo
     # file chooser image preview
     libsForQt5.qt5.qtimageformats
     libsForQt5.kio-extras
+    libsForQt5.breeze-icons
   ];
 
   # yubikey to enable ssh key
