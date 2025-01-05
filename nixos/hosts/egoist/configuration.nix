@@ -136,7 +136,7 @@
     # Otherwise if nothing works, pulse may be enabled here.
 
     # 2023-12-27: Baldur's Gate 3 Seems to want pulse :(
-    # pulse.enable = true;
+    pulse.enable = true;
     # jack.enable = true;
   };
   environment.enableDebugInfo = true;
@@ -207,14 +207,6 @@
     };
   };
 
-  # set the default terminal
-  xdg.terminal-exec = {
-    settings.niri = [
-      "foot.desktop"
-    ];
-    enable = true;
-  };
-
   users.users.egoist = {
     shell = pkgs.unstable.fish;
     isNormalUser = true;
@@ -257,7 +249,6 @@
       librewolf
 
       # NIRI stuff
-      swaybg
       btop
       adwaita-icon-theme
       grim
@@ -280,15 +271,18 @@
       wf-recorder
       wget
       wl-clipboard
-      # bemenu
       fuzzel
       yambar
-      unstable.egl-wayland
-      unstable.xwayland-satellite
     ];
   };
-  programs.niri.enable = true;
-  programs.niri.package = pkgs.niri;
+
+  programs.sway = {
+    enable = true;
+    package = pkgs.sway;
+    wrapperFeatures.gtk = true;
+  };
+
+  # Experimental: Currently breaks when steam receives a notification. Though i would love to use gamescope.
   programs.gamescope.enable = true;
   programs.gamescope.capSysNice = true;
   programs.gamescope.args = [
@@ -301,19 +295,12 @@
   programs.gamescope.package = pkgs.gamescope;
   services.blueman.enable = true;
   hardware.bluetooth.enable = true;
-  hardware.bluetooth.input = {
-    General = {
-      UserspaceHID = false;
-      ClassicBondedOnly = false;
-    };
-  };
   services.dbus.enable = true;
   xdg = {
     portal = {
       enable = true;
-      # wlr.enable = true;
+      wlr.enable = true;
       extraPortals = with pkgs; [
-        xdg-desktop-portal-gnome
         xdg-desktop-portal-kde
       ];
     };
@@ -376,7 +363,6 @@
     gamescopeSession.enable = true;
   };
   programs.gamemode.enable = true;
-  # programs.gamemode.enableRenice = true;
   programs.gamemode.settings = {
     gpu = {
       apply_gpu_optimisations = "accept-responsibility";
