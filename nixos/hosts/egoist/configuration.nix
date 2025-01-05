@@ -225,7 +225,7 @@
       "gamemode"
     ];
     packages = with pkgs; [
-      unstable.blender-hip
+      blender-hip
       bfs
       brave
       emacs29
@@ -275,6 +275,7 @@
       swaylock
       sysstat
       unstable.foot
+      unstable.wezterm
       unstable.imhex
       wf-recorder
       wget
@@ -287,16 +288,17 @@
     ];
   };
   programs.niri.enable = true;
-  programs.niri.package = pkgs.unstable.niri;
+  programs.niri.package = pkgs.niri;
   programs.gamescope.enable = true;
   programs.gamescope.capSysNice = true;
   programs.gamescope.args = [
     "-rt"
     "-f"
+    "--force-grab-cursor"
     "-W 5120"
     "-H 2880"
   ];
-  programs.gamescope.package = pkgs.unstable.gamescope;
+  programs.gamescope.package = pkgs.gamescope;
   services.blueman.enable = true;
   hardware.bluetooth.enable = true;
   hardware.bluetooth.input = {

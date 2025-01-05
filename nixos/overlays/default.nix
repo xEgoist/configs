@@ -20,7 +20,6 @@
         hash = "sha256-Q+pRFzPuN/uTvQ8XriGrjsj3rogPJPxy3Dx6OzSt2hc=";
       };
     });
-
     _mullvad-browser = super.mullvad-browser.override {
       extraPrefs = ''
         pref("media.getusermedia.aec_enabled", false);

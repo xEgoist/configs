@@ -3,10 +3,10 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
-    unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     agenix = {
       url = "github:ryantm/agenix";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "unstable";
     };
     matcha = {
       url = "git+https://codeberg.org/QuincePie/matcha";
